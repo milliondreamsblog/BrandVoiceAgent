@@ -186,3 +186,157 @@ Do not set up a weak version of how other people work just to look good by compa
 - Avoid: "This is where most people misuse AI."
 
 State what works and why, on its own merits. If the approach is good, it does not need a punching bag.
+
+## 13. Bullets must be specific enough to act on
+
+We like bullets and lists. But every bullet has to earn its place by being actionable.
+
+The test: could someone actually do this from what's written?
+
+- Specific (keep): "Extract the frontend and feed it to Claude alongside the Figma file and session context."
+- Vague (cut or fix): "Start with the smallest possible change."
+- Vague (cut or fix): "Test it, assess it, move to the next."
+
+If a bullet only restates common sense in confident language, cut it or make it concrete.
+
+## 14. Keep paragraphs short and scannable
+
+Big blocks of text kill readability, especially on social. Keep paragraphs to one or two sentences. Give the reader white space to move through.
+
+A reader should be able to scan the piece top to bottom and still follow the arc.
+
+## 15. No em-dashes
+
+Never use em-dashes. Use periods, commas, or colons instead.
+
+## 16. Never put invented words in a real person's mouth
+
+A quote attributed to a real client, founder, or partner has to be their real words, or close to it. A real quote is often the strongest possible hook, but only if it was actually said.
+
+If nobody said it, do not write it as a quote. Find an opener that carries the same idea without attributing invented words to a real person.
+
+- Risky: opening on "You're the least impressive agency we're talking to" if the client never said that.
+- Safe: "He almost ruled us out on our portfolio alone. Then he signed."
+
+This is not a style call. It is about not fabricating things real people said in public.
+
+## 17. Never label the emotion you're performing
+
+Announcing "Honest update:" before saying something honest, or writing "Uncomfortable to admit. Necessary to fix." after the uncomfortable thing, signals that you are performing honesty rather than being it. Drop the label and say the thing directly.
+
+- Avoid: "Honest agency update. Our project management isn't where it needs to be."
+- Avoid: "Uncomfortable to admit. Necessary to fix. Working on it this month."
+- Use: "@RakhraDivij and I are personally running client projects. That stopped being sustainable a while ago."
+
+This extends Rule 7. Rule 7 bans announcing content before delivering it. Rule 17 bans announcing the emotional register of what you're about to say. If a line names its own tone — honest, raw, uncomfortable, excited — flag it.
+
+## 18. When the story has a contradiction, open with it compressed
+
+If the story contains a tension ("smallest portfolio, still won" / "built 50+ websites, never built our own" / "strong opinions, weak portfolio"), that contradiction is the hook. Compress both sides into the first two sentences. Do not lead with the outcome and build to the paradox — lead with the paradox.
+
+- Avoid: "We won a new client this week. They'd spoken to three other agencies before us. We didn't have the biggest portfolio in the room."
+- Use: "We had the smallest portfolio in the room. We still won the account."
+- Avoid: "A new Bricx Labs website is coming. We've designed 50+ websites for startups."
+- Use: "The hardest website we've had to start is our own."
+
+The compressed version creates pull. The expanded version reads like a summary.
+
+## 19. The sharpest concrete detail belongs in the hook, not buried
+
+Rule 5 says be specific. Rule 19 says: the most concrete, surprising detail you have goes at the top. A WhatsApp message, a five-minute window, a $3 billion valuation, a single word like "bullied" — these anchor the reader before you explain anything. If the most vivid detail appears in paragraph two or three, that is a Rule 19 violation: move it up.
+
+- Avoid: "We got an inbound from a large company this week. Their VP of Brand found us through search. He reached out quickly."
+- Use: "A VP of Brand messaged us on WhatsApp five minutes after finding us. His company is valued at $3 billion."
+- Avoid: "Our clients kept asking if we do front-end dev. Then motion. Then animation. Then product videos."
+- Use: "Our clients bullied us to hire a design engineer."
+
+The single unexpected-but-accurate word ("bullied") does more work than a full setup paragraph.
+
+---
+
+## How we write hooks and angles
+
+A hook earns the open. An angle earns the read. The research on why people keep reading lines up with what already works for us, so here is the grounded version.
+
+**Open an information gap, then imply you will close it.**
+Curiosity does not fire at the unknown in general. It fires when someone becomes aware of one specific thing they do not know and want to. So a hook should surface a single missing piece. "A founder booked a call this week, and halfway through I realized we had no idea how he found us" names the gap: how did he find us? The gap has a size limit. Too small and there is no pull ("we got a referral"). Too big or too vague and the reader cannot even form the question. Aim for one clear, answerable unknown.
+
+**Hold the loop open. Do not answer in the first line.**
+People fixate on unfinished things and lose interest the moment a loop closes. The most common mistake is answering the hook in the same breath that opens it. The fixes are blunt: start with the consequence, not the context. End lines on implication, not explanation. Cut the final clarifying sentence and check if the piece is stronger without it. "A ghost lead?" works because it refuses to resolve for one more beat.
+
+**Start at the climax, then backfill. This is our default structure.**
+We open at the peak moment, then fill in how we got there, because that is the order a reader actually wants. The climax is the hook. The backstory is the reader closing the loop themselves. Lead with the win, the strange moment, or the line someone said, then explain how it happened.
+
+**Put a person and a real detail in the frame.**
+When a reader gets absorbed in a story, they argue back less and believe more, and that absorption depends on concrete, realistic detail and a person to follow. This is why a specific moment beats an abstract summary, and why the exact quote and the real number always land harder. A specific true detail is not decoration. It is what makes the reader believe us instead of skim us.
+
+**The angle is the conclusion the reader reaches on their own.**
+Stories persuade because the reader's guard is down, which means we never state the moral. Our angle is almost always proof of something we believe, delivered so the reader concludes it for themselves. The referral story proves our work speaks for itself. We never say that. The moment a post states its own lesson, it is preaching, and it breaks.
+
+**Vary the entry point. A question hook is one option among many.**
+The open loop and climax-first principles are right, but they do not dictate one shape. There are many ways to open a loop, and a one-line question ("A ghost lead?", "So why us?") is only one of them. Reusing the same opener shape across posts builds a new template, which is the exact sameness we are trying to avoid. Never run the same hook shape twice in a batch. Rotate the entry point:
+
+- A flat claim with a built-in contradiction: "We had the smallest portfolio in the room. We still won the account."
+- Someone's real words: "He almost ruled us out on our portfolio alone. Then he signed."
+- The number: "Three agencies pitched before us. All three had more to show than we did."
+- Mid-scene, on the decision: "He told us later he'd almost ruled us out on the portfolio alone."
+- The counterintuitive result, no question attached: "The thing that won us the account was the thing we almost left out of the pitch."
+
+**Rebuild from the facts. Do not just polish the draft.**
+When rewriting, take the raw facts and find the sharpest angle. Do not reskin the version you were handed, because tidying an existing structure keeps its weaknesses. Pull the post apart to its facts, then pick the best way in.
+
+Two tests for a hook:
+- Is there a person or a live moment in it, or just a fact stated flat?
+- Does it leave one clear thing open, or does it answer itself?
+
+One test for the angle:
+- What will the reader conclude on their own after reading this? If you cannot name it, there is no angle yet. If you have to write the conclusion into the post, the story is not doing its job.
+
+## Calibration anchors — before/after pairs
+
+These are real Siddharth drafts rewritten to Divij's approved version. Use them to calibrate what "on-voice" looks like for long-form agency posts. A correct critic should not flag any `After` version as off-voice.
+
+### Anchor 1 — Rule 18: open with the contradiction
+
+**Before (not approved):**
+"We won a new client this week. They'd spoken to three other agencies before us. We didn't have the biggest portfolio in the room. We had a point of view on their product and a date we'd commit to. That's what closed it. Turned out most agencies gave them options and maybes. A real opinion and a real timeline is rarer than it should be."
+
+**After (approved):**
+"We had the smallest portfolio in the room. We still won the account. The founder had already met three other agencies, all with more work in their industry to show than we had. On paper we were the weakest option. What we brought instead was a clear point of view on his product and a date we'd commit to. Everyone else had handed him options and maybe's. Nobody had just told him what they'd do and by when. Turns out a real opinion and a real deadline are rarer than they should be."
+
+### Anchor 2 — Rule 17: drop the emotional label
+
+**Before (not approved):**
+"Honest update: our project management is breaking. Me and @Divij are still running individual client projects ourselves. Too much living in too few heads. We're growing faster than our processes can handle right now. Uncomfortable to admit. Necessary to fix. Working on it this month."
+
+**After (approved):**
+"Right now, @RakhraDivij and I are personally running client projects. That stopped being sustainable a while ago. Too much of how this agency runs lives in two people's heads. The work itself is good. Keeping it good is taking more out of the two of us than it should. We're growing, which is the reason this is happening. Growth has outrun the systems we built for a smaller version of us. So the next few weeks go to fixing it. Clearer ownership on each project, and far less routed through the two of us. This isn't the most comfortable update to post. But it's true. We're already on it."
+
+### Anchor 3 — Rule 19: sharpest detail in the hook
+
+**Before (not approved):**
+"Our best lead this month came from someone we've never met. A founder reached out this week, referred by a famous VC firm. We've never worked with them. Never pitched them. No relationship, no ask."
+
+**After (approved):**
+"A founder booked a call this week, and partway through we realized we had no idea how he'd found us. A ghost lead? Turned out someone inside a well-known VC firm had seen our work and sent him our way. We'd never worked with them or even spoken to them."
+
+---
+
+## Quick checklist before publishing
+
+- Am I sharing what we did, or preaching a lesson?
+- Is every sentence active, with us as the doer?
+- Can the reader feel a real emotion, tied to a real moment?
+- Did I name specific, true details instead of general claims?
+- Did I get to the point, or build up to it?
+- Any labels announcing content before delivering it?
+- Any comma joining two complete thoughts? Make it a period.
+- Do my sentences vary in length and opener, or do they all start with "We"?
+- Any one or two-word sentences faking emphasis? Cut them. (Honest reactions like "A ghost lead?" are fine.)
+- Any three-phrase comma triplets? Bullet them or collapse them. (Repetition that mirrors the meaning is fine.)
+- Is the hook a different shape from the last few posts, not a reused template?
+- Is every quote from a real person actually something they said?
+- Am I bashing anyone to look good?
+- Does every bullet pass the "could someone act on this" test?
+- Are paragraphs short enough to scan?
+- No em-dashes anywhere.
