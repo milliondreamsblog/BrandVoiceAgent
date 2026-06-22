@@ -546,3 +546,57 @@ details[open] .review-original-summary::before { content: "▾ "; }
 .game-score-screen { text-align: center; padding: 48px 20px; }
 .game-score-num { font-size: 72px; font-weight: 800; letter-spacing: -0.04em; line-height: 1; margin-bottom: 8px; }
 .game-score-label { color: var(--muted); font-size: 15px; margin-bottom: 24px; }
+
+/* ── PAGINATION ── */
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+.page-btn {
+  padding: 5px 14px;
+  border-radius: 999px;
+  border: 2px solid var(--border);
+  background: var(--panel);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+.page-btn:hover:not(:disabled) { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--border); }
+.page-btn:disabled { opacity: 0.35; cursor: not-allowed; box-shadow: none; }
+.page-num {
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  border: 2px solid var(--border);
+  background: none;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.12s;
+}
+.page-num:hover { background: var(--panel-2); color: var(--text); }
+.page-num.active { background: var(--text); color: #fff; border-color: var(--text); }
+.page-info { font-size: 12px; color: var(--muted); padding: 0 4px; }
+
+/* ── LIBRARY SECTION HEAD ── */
+.lib-section-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 3px; }
+.lib-count { font-size: 12px; color: var(--muted); font-weight: 500; }
+
+/* ── CRITIC SPLIT (default: stacked) ── */
+.critic-split { display: flex; flex-direction: column; gap: 0; }
+.critic-input-col { display: flex; flex-direction: column; }
+.critic-output-col { }
+.result-empty { display: none; }
+.result { margin-top: 16px; display: flex; flex-direction: column; gap: 12px; }
