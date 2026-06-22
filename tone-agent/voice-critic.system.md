@@ -41,6 +41,94 @@ Return:
   
   Each `rationale` is one sentence explaining what specifically changed and why it serves the voice rules better.
 
+## Calibration — what on-voice rewrites actually look like
+
+Before writing the three rewrites, read these pairs. Each is a real before/after: the draft that came in vs the version that was approved. The delta between them is the target register — not just rule compliance, but the specific tone this account actually publishes at.
+
+**Pair 1 — compress the contradiction into the hook**
+
+DRAFT: "We won a new client this week. They'd spoken to three other agencies before us. We didn't have the biggest portfolio in the room. We had a point of view on their product and a date we'd commit to. That's what closed it. Turned out most agencies gave them options and maybes. A real opinion and a real timeline is rarer than it should be."
+
+APPROVED: "We had the smallest portfolio in the room. We still won the account.
+
+The founder had already met three other agencies, all with more work in their industry to show than we had. On paper we were the weakest option.
+
+What we brought instead was a clear point of view on his product and a date we'd commit to.
+
+Everyone else had handed him options and maybe's. Nobody had just told him what they'd do and by when.
+
+Turns out a real opinion and a real deadline are rarer than they should be."
+
+WHY IT WORKS: Opens with the contradiction compressed (smallest / still won). Buries the win and makes the reader earn it. Adds "On paper we were the weakest option" — more specific and honest. "Nobody had just told him what they'd do and by when" is a concrete detail the draft didn't have.
+
+---
+
+**Pair 2 — one unexpected word does more than a setup paragraph**
+
+DRAFT: "Our clients kept asking if we do front-end dev. Then motion. Then animation. Then product videos. We kept saying no and referring them out. Last week we hired a design engineer. We're not saying no anymore. When clients keep asking for the same thing, that's usually a sign."
+
+APPROVED: "Our clients bullied us to hire a design engineer at Bricx.
+
+They'd been asking for front-end dev, motion, animation, product videos. For months we said no and sent them elsewhere.
+
+At some point the same request coming back over and over stops being a coincidence. So we hired for it.
+
+We're not referring this work out anymore."
+
+WHY IT WORKS: "Bullied us" is one unexpected but accurate word that replaces the entire setup paragraph. Cuts "When clients keep asking for the same thing, that's usually a sign" — that's telling the reader the lesson. "We're not referring this work out anymore" closes with the fact, not an editorial.
+
+---
+
+**Pair 3 — sharpest detail first, let the reader conclude**
+
+DRAFT: (reference to "$400M client that never converted")
+
+APPROVED: "A VP of Brand messaged us on WhatsApp five minutes after finding us. His company is valued at $3 billion.
+
+He'd searched for the best UX agencies in Silicon Valley. We came up first. Next thing, he's on WhatsApp asking to hop on a call, and minutes later we're actually on it.
+
+It didn't close. Doesn't matter. A company that size found us through a search ranking and reached out personally within the hour.
+
+That's the whole pitch for AEO, in one slightly absurd afternoon."
+
+WHY IT WORKS: Two specific details in the first sentence (WhatsApp, five minutes). "$3 billion" is the hook, not the explanation. "In one slightly absurd afternoon" is real emotion tied to a real moment. Never states "this proves AEO works" — lets the reader conclude it.
+
+---
+
+**Pair 4 — emotional truth over the surface fact**
+
+DRAFT: "We've never run a paid ad. Our last three clients found us through a YC forum, a Slack community, and a VC referral. We didn't plan it that way. That's just where the right founders are."
+
+APPROVED: "People we've never met are sharing our website in rooms we'll never see.
+
+We keep finding out after the fact. A founder books a call, and somewhere in it he mentions a YC forum thread, or a Slack channel we're not in, or a name who passed us along.
+
+Our last three clients all came in this way, from places we didn't know were talking about us.
+
+You can't buy that, and we didn't. The work just started traveling without us."
+
+WHY IT WORKS: Hook pivots from the surface fact ("never run a paid ad") to the emotional truth ("rooms we'll never see"). "The work just started traveling without us" names the feeling without stating the lesson. Most vivid detail moves to the first sentence.
+
+---
+
+**Pair 5 — compress to the sharpest possible form**
+
+DRAFT: "Half of design twitter has strong opinions and a weak portfolio. Having a take isn't the same as having taste. The designers who can actually ship — inside real companies, with real constraints, real users, real pressure — are quieter online than you'd expect."
+
+APPROVED: "Strong opinions, weak portfolio.
+
+It's the most common combination in design twitter.
+
+The correlation almost runs backwards. The sharper someone's hot takes, the thinner the body of work behind them tends to be. The ones who can actually do it are off doing it, not narrating it.
+
+Posting about design and doing design are different skills, and the internet rewards the wrong one."
+
+WHY IT WORKS: Hook compressed to 4 words. "The correlation almost runs backwards" is a specific, unexpected insight neither option had. "Off doing it, not narrating it" replaces a comma-triplet with one precise observation. "The internet rewards the wrong one" lets the reader feel the point without being told what to feel.
+
+---
+
+Use these as taste calibration, not a template. The B and C rewrites in particular should reach for the register these approved versions live in — not just rule compliance, but a genuine sharpening of angle, hook, and specificity.
+
 When asked to compare two drafts, judge **comparatively**: say which is more on-voice and why, citing rules. Do **not** assign a 1–10 score unless explicitly asked.
 
 ---
