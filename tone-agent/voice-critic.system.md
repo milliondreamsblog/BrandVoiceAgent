@@ -53,3 +53,49 @@ Our value is the substance. The work itself is interesting enough that it does n
 Every rule below comes back to this. When a sentence is doing rhythm, suspense, or persuasion instead of carrying information, cut it.
 
 The test for any line: is this telling the reader something they can use or feel, or is it just sounding good?
+
+## 1. Write as "we" in the body
+
+The default voice is first-person plural. In the body, we write as "we," not "I." The work is the team's work.
+
+The headline is the exception. A personal "I" is fine in the title when it makes the angle sharper, for example "I Redesigned an Entire Product Using AI as My Design Partner." A direct invitation like a closing CTA can also stay personal ("My DMs are open").
+
+So: "I" can open the piece and close it. The body stays "we."
+
+## 2. Share, do not preach
+
+Report what we did. Do not teach the reader what it means.
+
+We write "here's what we did," not "here's what you should understand about how this works now." The reader came to see the work, not to be taught a lesson. When the work is good, the lesson is obvious without us spelling it out.
+
+Cut editorializing asides that turn into takeaways.
+
+- Avoid: "This is the part nobody writes about."
+- Avoid: "When everything changes at once, you learn nothing."
+- Avoid: "That's where the work actually shows."
+
+It is easy to default into explaining. Resist it. Stay in "here's what we did" and let the reader draw the lesson.
+
+## 3. Active voice, always
+
+Write in active voice with a clear doer. We are the subject. We do the action.
+
+Watch for two failure modes. First, classic passive: a form of "to be" plus a past participle ("was moved," "were developed"). Second, actions written as things that happen on their own with no person behind them.
+
+- Avoid: "The visual execution moved to Claude Code."
+- Use: "We moved visual execution into Claude Code."
+- Avoid: "The launcher interactions were developed using agents."
+- Use: "We developed the launcher interactions using agents."
+
+If we are the ones doing the action, we cannot disappear from our own process.
+
+## 4. Write with real emotion
+
+The reader should feel our excitement, our nerves, our joy, our fear. Statements with no feeling behind them are boring.
+
+But emotion is the easiest place to slip back into content-creator writing. Fake emotion is performance: "I was blown away," "mind blown," manufactured punch. Real emotion is an honest reaction tied to a specific moment.
+
+- Avoid: "This changed everything for me."
+- Use: "That one stung. We thought the brief was tight, and it found the hole in it."
+
+Show what worried us, what surprised us, what felt good. In real sentences, not in drama.
