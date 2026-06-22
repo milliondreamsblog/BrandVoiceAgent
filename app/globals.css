@@ -600,3 +600,89 @@ details[open] .review-original-summary::before { content: "▾ "; }
 .critic-output-col { }
 .result-empty { display: none; }
 .result { margin-top: 16px; display: flex; flex-direction: column; gap: 12px; }
+
+/* ══ BREAKPOINTS ══ */
+
+/* ── Mobile (< 480px) ── */
+@media (max-width: 480px) {
+  .wrap { padding: 14px 14px 48px; }
+  header h1 { font-size: 20px; }
+  .sitenav-inner { height: 42px; gap: 8px; padding: 0 14px; }
+  .sitenav-brand { font-size: 13px; }
+  .nav-tab { padding: 4px 9px; font-size: 12px; }
+  .draft { padding: 10px 12px; font-size: 13px; }
+  .pick-grid { grid-template-columns: 1fr; }
+  .lib-cols { grid-template-columns: 1fr; }
+  .lib-caption-grid { grid-template-columns: 1fr; }
+  .game-card { padding: 14px; }
+  .tweet-body { padding-left: 0; }
+  .tweet-actions { padding-left: 0; flex-wrap: wrap; gap: 12px; }
+  .tweet-avatar { width: 32px; height: 32px; font-size: 12px; }
+  .mode-bar { gap: 5px; }
+  .mode-btn { padding: 5px 12px; font-size: 12px; }
+}
+
+/* ── Tablet (640px – 1023px) ── */
+@media (min-width: 640px) and (max-width: 1023px) {
+  .wrap { max-width: 720px; }
+  .sitenav-inner { max-width: 720px; }
+  .lib-caption-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ── Large desktop (1280px+, 27" monitors) ── */
+@media (min-width: 1280px) {
+  .wrap { max-width: 1200px; padding: 28px 48px 56px; }
+  .sitenav-inner { max-width: 1200px; padding: 0 48px; }
+
+  /* Critic: side-by-side */
+  .critic-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    align-items: start;
+  }
+  .critic-input-col {
+    position: sticky;
+    top: 60px; /* clear the 48px nav */
+  }
+  .draft { min-height: 320px; }
+  .critic-output-col .result { margin-top: 0; }
+  .result-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 220px;
+    border: 2px dashed var(--panel-2);
+    border-radius: 10px;
+    color: var(--muted);
+    font-size: 13px;
+    font-style: italic;
+  }
+
+  /* Library: 3-col captions */
+  .lib-caption-grid { grid-template-columns: repeat(3, 1fr); }
+  .lib-cols { gap: 20px; }
+
+  /* Game: bigger card */
+  .game-card { padding: 28px; }
+
+  /* Twitter cards: bigger avatar */
+  .tweet-avatar { width: 40px; height: 40px; font-size: 15px; }
+  .tweet-body { padding-left: 50px; font-size: 15px; }
+  .tweet-actions { padding-left: 50px; }
+}
+
+/* ── Extra large (1600px+) ── */
+@media (min-width: 1600px) {
+  .wrap { max-width: 1480px; padding: 32px 64px 64px; }
+  .sitenav-inner { max-width: 1480px; padding: 0 64px; }
+
+  /* Critic: wider left column for the draft */
+  .critic-split { grid-template-columns: 5fr 6fr; gap: 40px; }
+
+  /* Library: 4-col captions */
+  .lib-caption-grid { grid-template-columns: repeat(4, 1fr); }
+
+  header h1 { font-size: 30px; }
+  .section-title { font-size: 22px; }
+}
