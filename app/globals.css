@@ -201,6 +201,13 @@ header h1 {
 .rewrite-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
 .rewrite-head h2 { margin: 0; }
 
+.rewrites { display: flex; flex-direction: column; gap: 16px; margin-top: 4px; }
+.rewrite-option { border: 1.5px solid var(--border); border-radius: 8px; padding: 14px 16px; background: var(--bg); }
+.rewrite-option-head { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
+.rewrite-label { flex-shrink: 0; width: 24px; height: 24px; border-radius: 50%; background: var(--ink); color: var(--cream); font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+.rewrite-rationale { flex: 1; font-size: 12px; color: var(--muted); line-height: 1.5; padding-top: 3px; }
+.rewrite-option .btn-ghost { flex-shrink: 0; }
+
 /* ── NAV ── */
 .sitenav {
   border-bottom: 2px solid var(--border);

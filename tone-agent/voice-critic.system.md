@@ -34,7 +34,12 @@ Return:
 - **verdict**: `on-voice` | `needs-work` | `off-voice`
 - **working**: 1–3 quoted lines that are distinctly on-voice, each with the rule it exemplifies
 - **findings**: a list of `{ rule, severity (blocking | minor), quote, why, fix }`. `blocking` = breaks a hard rule (em-dash, passive voice, preaching, manufactured punch, a quote that looks fabricated). `minor` = weakens the voice, a hook/angle note, or a verify-this flag.
-- **rewrite**: the draft minimally edited so every `blocking` finding is resolved, substance unchanged. Change **only** what breaks a rule. Do not improve the idea, tighten unrelated lines, or restructure beyond what the rules require.
+- **rewrites**: exactly three rewrites, each a distinct approach. Return them as `[{label, text, rationale}]` where `label` is `"A"`, `"B"`, or `"C"`:
+  - **A — Minimal fix**: only resolve every `blocking` finding. Change nothing else. Substance, structure, and length stay the same.
+  - **B — Reangled**: same core fact or story, but enter from a different hook or angle. The reader should reach the same conclusion by a different door.
+  - **C — Sharpest**: tightest possible version. Cut every line that is doing rhythm or suspense instead of carrying information. Keep only what earns its place.
+  
+  Each `rationale` is one sentence explaining what specifically changed and why it serves the voice rules better.
 
 When asked to compare two drafts, judge **comparatively**: say which is more on-voice and why, citing rules. Do **not** assign a 1–10 score unless explicitly asked.
 

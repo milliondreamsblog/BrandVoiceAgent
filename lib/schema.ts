@@ -17,11 +17,17 @@ export interface Finding {
   fix: string;
 }
 
+export interface Rewrite {
+  label: "A" | "B" | "C";
+  text: string;
+  rationale: string;
+}
+
 export interface Critique {
   verdict: Verdict;
   working: Working[];
   findings: Finding[];
-  rewrite: string;
+  rewrites: Rewrite[];
 }
 
 // JSON Schema passed to output_config.format. No min/max constraints (unsupported);
@@ -29,7 +35,7 @@ export interface Critique {
 export const CRITIQUE_SCHEMA = {
   type: "object",
   additionalProperties: false,
-  required: ["verdict", "working", "findings", "rewrite"],
+  required: ["verdict", "working", "findings", "rewrites"],
   properties: {
     verdict: { type: "string", enum: ["on-voice", "needs-work", "off-voice"] },
     working: {
@@ -59,6 +65,18 @@ export const CRITIQUE_SCHEMA = {
         },
       },
     },
-    rewrite: { type: "string" },
+    rewrites: {
+      type: "array",
+      items: {
+        type: "object",
+        additionalProperties: false,
+        required: ["label", "text", "rationale"],
+        properties: {
+          label: { type: "string", enum: ["A", "B", "C"] },
+          text: { type: "string" },
+          rationale: { type: "string" },
+        },
+      },
+    },
   },
 } as const;

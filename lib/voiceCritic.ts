@@ -18,7 +18,7 @@ export async function critiqueDraft(draft: string): Promise<Critique> {
       {
         role: "user",
         content:
-          "Critique this draft against the voice rules. Return only the structured verdict, with every finding tied to a specific rule number.\n\nDRAFT:\n" +
+          "Critique this draft against the voice rules. Return the structured verdict with every finding tied to a specific rule number, and three distinct rewrites (A minimal fix, B reangled, C sharpest).\n\nDRAFT:\n" +
           draft,
       },
     ],

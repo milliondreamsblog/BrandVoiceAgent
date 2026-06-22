@@ -6,7 +6,8 @@ type Severity = "blocking" | "minor";
 type Verdict = "on-voice" | "needs-work" | "off-voice";
 interface Working { quote: string; note: string; }
 interface Finding { rule: string; severity: Severity; quote: string; why: string; fix: string; }
-interface Critique { verdict: Verdict; working: Working[]; findings: Finding[]; rewrite: string; }
+interface Rewrite { label: "A" | "B" | "C"; text: string; rationale: string; }
+interface Critique { verdict: Verdict; working: Working[]; findings: Finding[]; rewrites: Rewrite[]; }
 
 export default function Home() {
   const [draft, setDraft] = useState("");
@@ -110,20 +111,28 @@ export default function Home() {
               </div>
 
               <div className="card">
-                <div className="rewrite-head">
-                  <h2>In-voice rewrite</h2>
-                  <button
-                    className="btn-ghost"
-                    onClick={() => {
-                      setDraft(result.rewrite);
-                      setResult(null);
-                      window.scrollTo({ top: 0, behavior: "smooth" });
-                    }}
-                  >
-                    Use this rewrite ↑
-                  </button>
+                <h2>Rewrites</h2>
+                <div className="rewrites">
+                  {result.rewrites.map((r) => (
+                    <div key={r.label} className="rewrite-option">
+                      <div className="rewrite-option-head">
+                        <span className="rewrite-label">{r.label}</span>
+                        <span className="rewrite-rationale">{r.rationale}</span>
+                        <button
+                          className="btn-ghost"
+                          onClick={() => {
+                            setDraft(r.text);
+                            setResult(null);
+                            window.scrollTo({ top: 0, behavior: "smooth" });
+                          }}
+                        >
+                          Use ↑
+                        </button>
+                      </div>
+                      <pre className="rewrite">{r.text}</pre>
+                    </div>
+                  ))}
                 </div>
-                <pre className="rewrite">{result.rewrite}</pre>
               </div>
             </section>
           )}
