@@ -99,3 +99,39 @@ But emotion is the easiest place to slip back into content-creator writing. Fake
 - Use: "That one stung. We thought the brief was tight, and it found the hole in it."
 
 Show what worried us, what surprised us, what felt good. In real sentences, not in drama.
+
+## 5. Be specific about what we actually did
+
+We want to be specific about our experiences. We cannot be specific everywhere, but wherever we can be, we should.
+
+Name the real constraint. The actual first change. The exact thing the client said. One concrete detail from what really happened beats ten general claims, because specificity is what makes a reader believe us instead of skim us.
+
+A real detail next to a real feeling is the strongest thing we can write.
+
+## 6. Get to the point. No throat-clearing.
+
+State the substance first. Do not build up to it. Do not tell unnecessary stories on the way in.
+
+- Avoid: "Not as a shortcut, not to move fast for the sake of it. But because..."
+
+These openers delay the point and pretend to be profound. Say the thing.
+
+## 7. No label-then-reveal
+
+Do not announce what is coming before saying it. The reader already knows what they are reading.
+
+- Avoid: "That was the brief: untangle the complexity."
+- Use: "We needed to untangle the complexity."
+- Avoid: "The part that still surprises me: it asks clarifying questions."
+- Use: "It asked good clarifying questions, the kind that surface assumptions we did not know we were making."
+
+Drop the label. The content stands on its own.
+
+## 8. Periods over commas
+
+Prefer periods. When a comma joins two complete thoughts, make it two sentences.
+
+- Avoid: "Halfway through the session it flagged a constraint we'd glossed over, and that constraint shaped the entire IA direction."
+- Use: "Halfway through the session it flagged a constraint we'd glossed over. That constraint shaped the entire IA direction."
+
+If a sentence leans on commas to chain clauses, break it.
