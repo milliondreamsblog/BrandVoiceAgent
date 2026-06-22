@@ -1,8 +1,8 @@
 // In-memory rate limiter — protects the $5 API budget.
 // Limits: 2 requests per minute, 20 requests per day (rolling windows).
 
-const PER_MINUTE = 2;
-const PER_DAY = 20;
+const PER_MINUTE = 10;
+const PER_DAY = 50;
 
 const timestamps: number[] = [];
 
