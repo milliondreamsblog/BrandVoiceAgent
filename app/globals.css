@@ -200,3 +200,48 @@ header h1 {
 .rewrite { white-space: pre-wrap; font-family: inherit; margin: 0; font-size: 14px; line-height: 1.6; }
 .rewrite-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
 .rewrite-head h2 { margin: 0; }
+
+/* ── NAV ── */
+.sitenav {
+  border-bottom: 2px solid var(--border);
+  background: var(--bg);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.sitenav-inner {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  height: 48px;
+}
+.sitenav-brand {
+  font-weight: 800;
+  font-size: 15px;
+  color: var(--text);
+  letter-spacing: -0.03em;
+}
+.sitenav-tabs { display: flex; gap: 2px; }
+.nav-tab {
+  padding: 5px 12px;
+  border-radius: 999px;
+  text-decoration: none;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 500;
+  transition: color 0.15s, background 0.15s;
+}
+.nav-tab:hover { color: var(--text); }
+.nav-tab.active {
+  color: var(--text);
+  background: var(--panel);
+  border: 1.5px solid var(--border);
+  font-weight: 700;
+  box-shadow: var(--shadow-sm);
+}
+
+/* ── SECTION TITLE ── */
+.section-title { font-size: 18px; font-weight: 800; margin: 0 0 3px; letter-spacing: -0.02em; }
