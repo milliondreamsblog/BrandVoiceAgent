@@ -43,3 +43,23 @@ header h1 {
   margin: 0 0 5px;
 }
 .sub { color: var(--muted); margin: 0 0 16px; font-size: 14px; }
+
+/* ── TEXTAREA ── */
+.draft {
+  width: 100%;
+  background: var(--panel);
+  color: var(--text);
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 14px;
+  resize: vertical;
+  font-family: inherit;
+  line-height: 1.6;
+  box-shadow: var(--shadow);
+  transition: box-shadow 0.12s;
+}
+.draft:focus { outline: none; box-shadow: 5px 5px 0 var(--border); }
+
+/* ── ROW ── */
+.row { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
