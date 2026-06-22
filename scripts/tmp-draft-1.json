@@ -1,0 +1,21 @@
+{
+  "source": "chat",
+  "original": "Ecommerce can be art too\n\n[Outpace Studios post — adapting format: 1-line reframe + product visual. Made 142 likes, 9.8K views.]",
+  "versions": [
+    {
+      "label": "A",
+      "text": "B2B can be beautiful too.",
+      "rationale": "Direct parallel to the original's format. 5 words. The 'too' implies the category wasn't expected to be beautiful — that's the whole contradiction. Works as a caption for any design showcase visual."
+    },
+    {
+      "label": "B",
+      "text": "Most SaaS looks like it was built to work, not to be opened. We design for both.",
+      "rationale": "Opens on a specific category observation (Rule 5), then lands on what Bricx does differently. Reader infers the quality — we don't claim it (Rule 2). Works with a before/after UI visual."
+    },
+    {
+      "label": "C",
+      "text": "Enterprise software doesn't have to look like a compliance form.",
+      "rationale": "Sharpest concrete detail in the hook (Rule 19) — 'compliance form' is the exact thing every B2B founder fears their product looks like. Contradiction without explaining it. Let the visual do the rest."
+    }
+  ]
+}

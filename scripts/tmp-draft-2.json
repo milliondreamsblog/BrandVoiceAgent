@@ -1,0 +1,21 @@
+{
+  "source": "chat",
+  "original": "The market is a 9, but the app is a 10\n\n[Outpace Studios post — adapting format: meme pun ('she's a 10 but…') + product UI visual. 115 likes, 9.3K views. Number on screen matches caption.]",
+  "versions": [
+    {
+      "label": "A",
+      "text": "The AI space is a 9, but the interface is a 10.",
+      "rationale": "Direct format swap into Bricx's world. Works with any AI product UI screenshot. The meme reference lands even if you don't know the original."
+    },
+    {
+      "label": "B",
+      "text": "The market's bearish. The design isn't.",
+      "rationale": "6 words. Picks up the fear & greed context from the original — bearish sentiment vs premium-looking product. Contradiction compressed in two sentences (Rule 18). Pairs with a dark-mode UI visual."
+    },
+    {
+      "label": "C",
+      "text": "Pre-revenue. Not pre-designed.",
+      "rationale": "4 words. Startup context — early-stage companies are expected to look unpolished. Bricx breaks that assumption. No explanation needed. Let the product visual prove it (Rule 2). Sharpest version."
+    }
+  ]
+}

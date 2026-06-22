@@ -1,0 +1,21 @@
+{
+  "source": "chat",
+  "original": "We made @camb_ai's paywall skippable.\nif a user gets to the dashboard and sees voice dubbing in 140+ languages, real-time translation. and their own studio - the $14.99 sells itself.\nIt did, the conversions went up.",
+  "versions": [
+    {
+      "label": "A",
+      "text": "We made @camb_ai's paywall skippable.\n\nA user who reaches the dashboard sees voice dubbing in 140+ languages, real-time translation, their own studio. The $14.99 sells itself.\n\nIt did. Conversions went up.",
+      "rationale": "Minimal clean fix. Removes em-dash and broken sentence, fixes comma splice. Keeps the original rhythm and hook. Best for a design showcase caption."
+    },
+    {
+      "label": "B",
+      "text": "@camb_ai's conversions went up after we made the paywall skippable.\n\nWe moved the pricing gate. A user who reaches the dashboard first sees voice dubbing in 140+ languages, real-time translation, their own studio. By the upgrade screen, they've already decided.",
+      "rationale": "Result first, then mechanism. 'Moved the pricing gate' names the actual design decision (Rule 5). Ends on the reader concluding the $14.99 — doesn't state it (Rule 2)."
+    },
+    {
+      "label": "C",
+      "text": "140 languages. Real-time translation. Your own studio. All before the paywall.\n\nWe moved @camb_ai's pricing gate to the end. Conversions went up.",
+      "rationale": "Tightest version. Features stack so 'all before the paywall' lands harder. Reader does all the work — no 'sells itself', no explanation. Just the result. The version no one else writes."
+    }
+  ]
+}
