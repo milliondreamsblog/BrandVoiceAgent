@@ -96,7 +96,7 @@ export default function ReviewPage() {
               </details>
 
               <div className="review-versions">
-                {draft.versions.map((v, i) => (
+                {(draft.versions ?? []).map((v, i) => (
                   <div key={i} className="review-version">
                     <div className="review-version-label">{v.label}</div>
                     <TweetCard text={v.text} idx={di * 3 + i} />
@@ -125,7 +125,7 @@ export default function ReviewPage() {
           <div className="lib-caption-grid">
             {approved.map(
               (d, i) =>
-                d.selected !== null && (
+                d.selected !== null && d.versions?.[d.selected] && (
                   <TweetCard
                     key={d.id}
                     text={d.versions[d.selected!].text}
