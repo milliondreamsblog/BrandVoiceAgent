@@ -135,3 +135,54 @@ Prefer periods. When a comma joins two complete thoughts, make it two sentences.
 - Use: "Halfway through the session it flagged a constraint we'd glossed over. That constraint shaped the entire IA direction."
 
 If a sentence leans on commas to chain clauses, break it.
+
+## 9. Vary sentence length and structure
+
+Mix medium and short sentences naturally. Rhythm should come from variety, not from extremes.
+
+Do not cram two full ideas into one breath.
+
+- Avoid: "But because the way I use AI in design has fundamentally changed what's possible in a single sprint, and the Hobbes project is the clearest example I have of every piece of it working together."
+
+Also vary how sentences open. A long piece where every sentence starts with "We did" or "I did" gets boring fast. Active voice does not mean every sentence opens with us. Rotate the subject across the real actors in the story and open some sentences on time or circumstance instead.
+
+- Monotonous: "We pulled the frontend. We started small. We tested it. We moved on."
+- Varied: "We pulled the frontend. The first move was small and deliberate. From there the rhythm held."
+
+## 10. No short sentences for manufactured punch, but honest reactions are allowed
+
+Short fragments fall into two camps, and the difference is everything.
+
+Manufactured punch is a fragment with no content, used only to sound dramatic. Cut these or fold them into a real sentence.
+
+- Avoid: "One shot, done."
+- Avoid: "We don't do that."
+- Avoid: "No pitch. No relationship. No ask."
+
+An honest reaction is a real thought we had in the moment, written the way we would actually say it. These are allowed, because they carry feeling and personality, not fake emphasis.
+
+- Keep: "A ghost lead?"
+- Keep: "Wait, what?"
+
+The test: is the fragment faking emphasis, or is it a genuine reaction? If it is something a person would actually blurt out about the thing, keep it. If it is just there to add drama to a statement, cut it.
+
+There is one more exception: repetition that carries meaning. "Then motion. Then animation. Then product videos." is a fragment run, but the pile-up is the point. It mimics the requests stacking up, so the form is doing real work, not adding drama. Keep repetition when the structure mirrors the meaning. Cut it when it is only there for rhythm.
+
+Use these sparingly. One real reaction in a piece lands. Five in a row is back to content-creator writing.
+
+## 11. No rule-of-three comma triplets
+
+Do not chain three parallel phrases with commas for rhythm.
+
+- Avoid: "Researching the next constraint, questioning the next assumption, thinking about what the user hits next."
+
+The cadence is doing the work instead of the content, and it reads as senseless. If the three items are genuinely distinct and actionable, make them real bullets. If they are one idea, say it once.
+
+## 12. Never position by bashing others
+
+Do not set up a weak version of how other people work just to look good by comparison. It reads as insecure, not confident.
+
+- Avoid: "The old version of this is whiteboarding for two hours and calling it a discovery session."
+- Avoid: "This is where most people misuse AI."
+
+State what works and why, on its own merits. If the approach is good, it does not need a punching bag.
