@@ -112,3 +112,35 @@ header h1 {
 .btn-ghost:hover { color: var(--text); background: var(--panel-2); }
 
 .hint { color: var(--muted); font-size: 12px; }
+
+/* ── ERROR ── */
+.error {
+  margin-top: 12px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: #fff0ef;
+  border: 2px solid var(--red);
+  box-shadow: 2px 2px 0 var(--red);
+  color: var(--red);
+  font-weight: 500;
+  font-size: 14px;
+}
+
+/* ── RESULT ── */
+.result { margin-top: 20px; display: flex; flex-direction: column; gap: 12px; }
+
+/* ── VERDICT ── */
+.verdict {
+  display: inline-block;
+  align-self: flex-start;
+  text-transform: capitalize;
+  font-weight: 700;
+  padding: 5px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  border: 2px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+.v-on-voice   { background: #c8f5d0; color: var(--green); }
+.v-needs-work { background: #fde74c; color: #7a4a00; }
+.v-off-voice  { background: #ffd4d0; color: var(--red); }
