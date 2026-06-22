@@ -63,3 +63,52 @@ header h1 {
 
 /* ── ROW ── */
 .row { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+
+/* ── BUTTONS ── */
+.btn {
+  background: var(--accent);
+  color: #fff;
+  border: 2px solid var(--border);
+  border-radius: 999px;
+  padding: 8px 20px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+.btn:hover:not(:disabled) { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--border); }
+.btn:active:not(:disabled) { transform: translate(1px, 1px); box-shadow: 1px 1px 0 var(--border); }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.btn-secondary {
+  background: var(--panel);
+  color: var(--text);
+  border: 2px solid var(--border);
+  border-radius: 999px;
+  padding: 8px 18px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+.btn-secondary:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--border); }
+
+.btn-ghost {
+  background: none;
+  border: 1.5px solid var(--border);
+  color: var(--muted);
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 500;
+  transition: all 0.15s;
+}
+.btn-ghost:hover { color: var(--text); background: var(--panel-2); }
+
+.hint { color: var(--muted); font-size: 12px; }
