@@ -245,3 +245,60 @@ header h1 {
 
 /* ── SECTION TITLE ── */
 .section-title { font-size: 18px; font-weight: 800; margin: 0 0 3px; letter-spacing: -0.02em; }
+
+/* ── TWITTER CARD ── */
+.tweet-card {
+  background: var(--panel);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  box-shadow: var(--shadow-sm);
+}
+.tweet-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.tweet-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--text);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 14px;
+  flex-shrink: 0;
+  border: 2px solid var(--border);
+  letter-spacing: -0.02em;
+}
+.tweet-meta { flex: 1; min-width: 0; line-height: 1.2; }
+.tweet-name { font-weight: 700; font-size: 14px; display: block; }
+.tweet-handle { font-size: 12px; color: var(--muted); }
+.tweet-x-icon { color: var(--muted); flex-shrink: 0; margin-top: 2px; }
+.tweet-body {
+  font-size: 14px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  margin-bottom: 10px;
+  padding-left: 46px;
+}
+.tweet-divider { border: none; border-top: 1px solid var(--panel-2); margin: 0 0 8px; }
+.tweet-actions {
+  display: flex;
+  gap: 0;
+  padding-left: 46px;
+}
+.tweet-action {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--muted);
+  font-size: 12px;
+  flex: 1;
+  cursor: default;
+}
+.tweet-action svg { width: 15px; height: 15px; }
