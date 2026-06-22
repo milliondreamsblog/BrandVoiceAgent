@@ -302,3 +302,22 @@ header h1 {
   cursor: default;
 }
 .tweet-action svg { width: 15px; height: 15px; }
+
+/* tweet-card as interactive button (game pick mode) */
+.tweet-card-btn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+.tweet-card-btn:hover:not(:disabled) {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 var(--border);
+}
+.tweet-card-btn:disabled { cursor: default; }
+/* result states */
+.tweet-card.state-correct  { border-color: #16a34a; background: #dcfce7; box-shadow: 4px 4px 0 #16a34a; }
+.tweet-card.state-wrong    { border-color: #dc2626; background: #fee2e2; box-shadow: 4px 4px 0 #dc2626; }
+.tweet-card.state-revealed { border-color: #16a34a; background: #f0fdf4; box-shadow: 4px 4px 0 #16a34a; opacity: 0.75; }
