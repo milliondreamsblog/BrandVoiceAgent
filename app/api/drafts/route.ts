@@ -10,16 +10,21 @@ async function readBlob(url: string) {
 }
 
 export async function GET() {
+  const token = process.env.BLOB_READ_WRITE_TOKEN;
   try {
-    const { blobs } = await list({ prefix: "bricx-drafts/" });
-    const drafts = await Promise.all(
+    const { blobs } = await list({ prefix: "bricx-drafts/", token });
+    const settled = await Promise.allSettled(
       blobs
         .sort((a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime())
         .map((blob) => readBlob(blob.url))
     );
+    const drafts = settled
+      .filter((r): r is PromiseFulfilledResult<unknown> => r.status === "fulfilled")
+      .map((r) => r.value);
     return NextResponse.json(drafts);
-  } catch {
-    return NextResponse.json([]);
+  } catch (e) {
+    console.error("GET /api/drafts failed:", e);
+    return NextResponse.json({ error: String(e) }, { status: 500 });
   }
 }
 

@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(req: NextRequest) {
   const { id, selected } = await req.json();
 
-  const { blobs } = await list({ prefix: `bricx-drafts/${id}.json` });
+  const { blobs } = await list({ prefix: `bricx-drafts/${id}.json`, token: process.env.BLOB_READ_WRITE_TOKEN });
   if (!blobs.length) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
