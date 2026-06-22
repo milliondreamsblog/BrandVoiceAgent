@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import TweetCard from "./components/TweetCard";
 
 type Severity = "blocking" | "minor";
 type Verdict = "on-voice" | "needs-work" | "off-voice";
@@ -113,11 +114,14 @@ export default function Home() {
               <div className="card">
                 <h2>Rewrites</h2>
                 <div className="rewrites">
-                  {result.rewrites.map((r) => (
+                  {result.rewrites.map((r, i) => (
                     <div key={r.label} className="rewrite-option">
                       <div className="rewrite-option-head">
                         <span className="rewrite-label">{r.label}</span>
                         <span className="rewrite-rationale">{r.rationale}</span>
+                      </div>
+                      <TweetCard text={r.text} idx={i} />
+                      <div className="rewrite-option-footer">
                         <button
                           className="btn-ghost"
                           onClick={() => {
@@ -126,10 +130,9 @@ export default function Home() {
                             window.scrollTo({ top: 0, behavior: "smooth" });
                           }}
                         >
-                          Use ↑
+                          Use this ↑
                         </button>
                       </div>
-                      <pre className="rewrite">{r.text}</pre>
                     </div>
                   ))}
                 </div>
