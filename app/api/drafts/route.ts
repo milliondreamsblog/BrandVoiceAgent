@@ -1,18 +1,19 @@
 import { put, list } from "@vercel/blob";
 import { NextRequest, NextResponse } from "next/server";
 
+const TOKEN = (process.env.BLOB_READ_WRITE_TOKEN ?? "").replace(/^﻿/, "");
+
 async function readBlob(url: string) {
   const res = await fetch(url, {
-    headers: { Authorization: `Bearer ${process.env.BLOB_READ_WRITE_TOKEN}` },
+    headers: { Authorization: `Bearer ${TOKEN}` },
     cache: "no-store",
   });
   return res.json();
 }
 
 export async function GET() {
-  const token = process.env.BLOB_READ_WRITE_TOKEN;
   try {
-    const { blobs } = await list({ prefix: "bricx-drafts/", token });
+    const { blobs } = await list({ prefix: "bricx-drafts/", token: TOKEN });
     const settled = await Promise.allSettled(
       blobs
         .sort((a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime())
@@ -47,6 +48,7 @@ export async function POST(req: NextRequest) {
     access: "private",
     addRandomSuffix: false,
     contentType: "application/json",
+    token: TOKEN,
   });
 
   return NextResponse.json({ id });
