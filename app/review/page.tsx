@@ -1,46 +1,88 @@
 "use client";
-import { useEffect, useState, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import TweetCard from "../components/TweetCard";
-import { Rationale } from "../components/RuleTooltip";
+import RewriteCard, { type RewriteData } from "../components/RewriteCard";
+import ComposeDialog from "../components/ComposeDialog";
+import {
+  PILLAR_META,
+  PILLAR_FILTER_ORDER,
+  pillarFilterMeta,
+  type Pillar,
+  type PillarFilter,
+} from "../../lib/pillars";
 
-interface Version { label: string; text: string; rationale?: string; }
-interface Draft {
+interface Reaction {
   id: string;
-  status: "pending" | "approved";
-  source: string;
-  original: string;
-  versions: Version[];
-  selected: number | null;
-  created_at: string;
+  rewriteId: string | null;
+  type: string;
+  payload: string | null;
+}
+interface Media {
+  type: "image" | "video";
+  url: string;
+}
+interface Post {
+  id: string;
+  body: string;
+  media: Media[];
+  pillar: Pillar;
+  createdAt: string;
+  rewrites: RewriteData[];
+  reactions: Reaction[];
 }
 
 export default function ReviewPage() {
-  const [drafts, setDrafts] = useState<Draft[]>([]);
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
+  const [tab, setTab] = useState<"pending" | "reviewed">("pending");
+  const [pillar, setPillar] = useState<PillarFilter>("all");
   const [loading, setLoading] = useState(true);
-  const [selecting, setSelecting] = useState<string | null>(null);
+  const [compose, setCompose] = useState(false);
+  const [confirmId, setConfirmId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  const pageSize = 10;
+  const pages = Math.max(1, Math.ceil(total / pageSize));
 
   const load = useCallback(async () => {
     setLoading(true);
-    const res = await fetch("/api/drafts");
-    setDrafts(await res.json());
+    const res = await fetch(
+      `/api/posts?page=${page}&status=${tab}&pillar=${pillar}`
+    );
+    const data = await res.json();
+    setPosts(data.posts ?? []);
+    setTotal(data.total ?? 0);
     setLoading(false);
-  }, []);
+  }, [page, tab, pillar]);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+    load();
+  }, [load]);
 
-  async function select(draftId: string, versionIdx: number) {
-    setSelecting(draftId);
-    await fetch("/api/drafts/select", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: draftId, selected: versionIdx }),
-    });
-    await load();
-    setSelecting(null);
+  function switchTab(t: "pending" | "reviewed") {
+    setTab(t);
+    setPage(1);
   }
 
-  const pending = drafts.filter((d) => d.status === "pending");
-  const approved = drafts.filter((d) => d.status === "approved");
+  function switchPillar(p: PillarFilter) {
+    setPillar(p);
+    setPage(1);
+  }
+
+  async function deletePost(id: string) {
+    setDeletingId(id);
+    try {
+      const res = await fetch(`/api/posts?id=${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error((await res.json()).error ?? "Delete failed");
+      setConfirmId(null);
+      await load();
+    } catch (e) {
+      alert(`Couldn't delete this draft: ${(e as Error).message}`);
+    } finally {
+      setDeletingId(null);
+    }
+  }
 
   return (
     <main className="wrap">
@@ -50,91 +92,204 @@ export default function ReviewPage() {
             <span className="accent-label">divij&apos;s queue</span>
             <h1>Review Queue</h1>
             <p className="sub">
-              Pick the best version. Approved posts become training data.
+              Like freely. Pick one. Every edit, comment, and pick trains the loop.
             </p>
           </div>
+          <button className="btn" onClick={() => setCompose(true)}>
+            ✎ New post
+          </button>
+        </div>
+
+        <div className="mode-bar">
+          <button
+            className={`mode-btn${tab === "pending" ? " active" : ""}`}
+            onClick={() => switchTab("pending")}
+          >
+            Needs a pick
+          </button>
+          <button
+            className={`mode-btn${tab === "reviewed" ? " active" : ""}`}
+            onClick={() => switchTab("reviewed")}
+          >
+            Reviewed
+          </button>
+
+          <div className="pillar-tabs">
+            {PILLAR_FILTER_ORDER.map((p) => {
+              const m = pillarFilterMeta(p);
+              return (
+                <button
+                  key={p}
+                  className={`mode-btn pillar-tab${pillar === p ? " active" : ""}`}
+                  onClick={() => switchPillar(p)}
+                  title={m.label}
+                >
+                  {m.emoji} {m.short}
+                </button>
+              );
+            })}
+          </div>
+
           <button className="btn-ghost" onClick={load} disabled={loading}>
-            {loading ? "Loading..." : "↺ Refresh"}
+            {loading ? "Loading…" : "↺ Refresh"}
           </button>
         </div>
       </header>
 
-      {loading && <div className="result-empty">Loading drafts...</div>}
+      {loading && <div className="review-empty">Loading…</div>}
 
-      {!loading && pending.length === 0 && approved.length === 0 && (
-        <div className="result-empty">
-          No drafts yet. Push one from chat or use the Critic page.
+      {!loading && posts.length === 0 && (
+        <div className="review-empty">
+          {pillar === "all"
+            ? tab === "pending"
+              ? "No posts waiting for review. Add one with “New post”."
+              : "No reviewed posts yet."
+            : tab === "pending"
+            ? `No ${PILLAR_META[pillar].short} posts waiting. Tag one with this pillar in “New post”.`
+            : `No reviewed ${PILLAR_META[pillar].short} posts yet.`}
         </div>
       )}
 
-      {!loading && pending.length > 0 && (
-        <section className="lib-section">
-          <div className="lib-section-head">
-            <h2 className="section-title">Needs a pick</h2>
-            <span className="lib-count">{pending.length} draft{pending.length !== 1 ? "s" : ""}</span>
-          </div>
-
-          {pending.map((draft, di) => (
-            <div key={draft.id} className="review-draft">
+      {!loading &&
+        posts.map((post, pi) => {
+          const pickedId =
+            post.reactions.find((r) => r.type === "pick")?.rewriteId ?? null;
+          const sorted = [...post.rewrites].sort((a, b) =>
+            a.label.localeCompare(b.label)
+          );
+          return (
+            <div key={post.id} className="review-draft">
               <div className="review-draft-meta">
-                <span className="lib-category">
-                  {draft.source === "chat" ? "from chat" : "from critic"}
+                <span className="lib-category">writer&apos;s draft</span>
+                <span className="pillar-badge">
+                  {PILLAR_META[post.pillar].emoji} {PILLAR_META[post.pillar].label}
                 </span>
                 <span className="review-date">
-                  {new Date(draft.created_at).toLocaleDateString("en-IN", {
+                  {new Date(post.createdAt).toLocaleDateString("en-IN", {
                     day: "numeric",
                     month: "short",
                   })}
                 </span>
+
+                <div className="review-draft-actions">
+                  {confirmId === post.id ? (
+                    <span className="delete-confirm">
+                      <span className="delete-confirm-q">
+                        Delete & remove from training?
+                      </span>
+                      <button
+                        className="del-btn del-yes"
+                        disabled={deletingId === post.id}
+                        onClick={() => deletePost(post.id)}
+                      >
+                        {deletingId === post.id ? "Deleting…" : "Yes, delete"}
+                      </button>
+                      <button
+                        className="del-btn del-no"
+                        disabled={deletingId === post.id}
+                        onClick={() => setConfirmId(null)}
+                      >
+                        Cancel
+                      </button>
+                    </span>
+                  ) : (
+                    <button
+                      className="del-btn del-trash"
+                      title="Delete this draft and remove it from the agent's training"
+                      onClick={() => setConfirmId(post.id)}
+                    >
+                      🗑 Delete
+                    </button>
+                  )}
+                </div>
               </div>
 
-              <details className="review-original-details">
-                <summary className="review-original-summary">
-                  Original draft
-                </summary>
-                <pre className="lib-text lib-text-before">{draft.original}</pre>
-              </details>
+              {/* the writer's original, as a real tweet card */}
+              <TweetCard text={post.body} media={post.media} idx={pi} />
 
-              <div className="review-versions">
-                {(draft.versions ?? []).map((v, i) => (
-                  <div key={i} className="review-version">
-                    <div className="review-version-label">{v.label}</div>
-                    <TweetCard text={v.text} idx={di * 3 + i} />
-                    {v.rationale && <Rationale text={v.rationale} />}
-                    <button
-                      className="btn review-pick-btn"
-                      onClick={() => select(draft.id, i)}
-                      disabled={selecting === draft.id}
-                    >
-                      {selecting === draft.id ? "Saving..." : "Pick this one ↑"}
-                    </button>
-                  </div>
-                ))}
+              <div className="rw-divider">
+                <span>3 rewrites from the loop</span>
+              </div>
+
+              {sorted.length === 0 && (
+                <div className="error">
+                  Rewrites didn&apos;t generate for this one. Refresh in a moment.
+                </div>
+              )}
+
+              <div className="rw-grid">
+                {sorted.map((rw, ri) => {
+                  const rxn = post.reactions;
+                  return (
+                    <RewriteCard
+                      key={rw.id}
+                      rewrite={rw}
+                      postId={post.id}
+                      media={post.media}
+                      idx={pi * 3 + ri}
+                      liked={rxn.some((r) => r.rewriteId === rw.id && r.type === "like")}
+                      disapproved={rxn.some(
+                        (r) => r.rewriteId === rw.id && r.type === "disapprove"
+                      )}
+                      edit={
+                        rxn.find((r) => r.rewriteId === rw.id && r.type === "edit")
+                          ?.payload ?? undefined
+                      }
+                      comments={rxn
+                        .filter((r) => r.rewriteId === rw.id && r.type === "comment")
+                        .map((r) => r.payload ?? "")
+                        .filter(Boolean)}
+                      picked={pickedId === rw.id}
+                      anyPicked={pickedId !== null}
+                      onAfter={load}
+                    />
+                  );
+                })}
               </div>
             </div>
+          );
+        })}
+
+      {!loading && pages > 1 && (
+        <div className="pagination">
+          <button
+            className="page-btn"
+            disabled={page <= 1}
+            onClick={() => setPage((p) => p - 1)}
+          >
+            ← Prev
+          </button>
+          {Array.from({ length: pages }, (_, i) => i + 1).map((n) => (
+            <button
+              key={n}
+              className={`page-num${n === page ? " active" : ""}`}
+              onClick={() => setPage(n)}
+            >
+              {n}
+            </button>
           ))}
-        </section>
+          <button
+            className="page-btn"
+            disabled={page >= pages}
+            onClick={() => setPage((p) => p + 1)}
+          >
+            Next →
+          </button>
+          <span className="page-info">
+            {total} post{total !== 1 ? "s" : ""}
+          </span>
+        </div>
       )}
 
-      {!loading && approved.length > 0 && (
-        <section className="lib-section">
-          <div className="lib-section-head">
-            <h2 className="section-title">Approved</h2>
-            <span className="lib-count">{approved.length} posts</span>
-          </div>
-          <div className="lib-caption-grid">
-            {approved.map(
-              (d, i) =>
-                d.selected !== null && d.versions?.[d.selected] && (
-                  <TweetCard
-                    key={d.id}
-                    text={d.versions[d.selected!].text}
-                    idx={20 + i}
-                  />
-                )
-            )}
-          </div>
-        </section>
+      {compose && (
+        <ComposeDialog
+          onClose={() => setCompose(false)}
+          onDone={() => {
+            setCompose(false);
+            switchTab("pending");
+            load();
+          }}
+        />
       )}
     </main>
   );

@@ -14,17 +14,24 @@ const ENGAGEMENTS = [
   { replies: 18, retweets: 43, likes: 287, views: "5.9K" },
 ];
 
+export interface TweetMedia {
+  type: "image" | "video";
+  url: string;
+}
+
 interface TweetCardProps {
   text: string;
   idx?: number;
+  media?: TweetMedia[];
   onClick?: () => void;
   state?: "correct" | "wrong" | "revealed" | null;
   disabled?: boolean;
 }
 
-export default function TweetCard({ text, idx = 0, onClick, state, disabled }: TweetCardProps) {
+export default function TweetCard({ text, idx = 0, media, onClick, state, disabled }: TweetCardProps) {
   const eng = ENGAGEMENTS[idx % ENGAGEMENTS.length];
   const isClickable = !!onClick;
+  const items = media ?? [];
 
   const cls = [
     "tweet-card",
@@ -45,7 +52,20 @@ export default function TweetCard({ text, idx = 0, onClick, state, disabled }: T
         </svg>
       </div>
 
-      <div className="tweet-body">{text}</div>
+      {text && <div className="tweet-body">{text}</div>}
+
+      {items.length > 0 && (
+        <div className={`tweet-media tweet-media-${Math.min(items.length, 4)}`}>
+          {items.map((m, i) =>
+            m.type === "video" ? (
+              <video key={i} src={m.url} className="tweet-media-item" controls preload="metadata" />
+            ) : (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img key={i} src={m.url} className="tweet-media-item" alt="" />
+            )
+          )}
+        </div>
+      )}
 
       <hr className="tweet-divider" />
 
