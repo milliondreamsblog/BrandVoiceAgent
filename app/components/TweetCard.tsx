@@ -26,9 +26,14 @@ interface TweetCardProps {
   onClick?: () => void;
   state?: "correct" | "wrong" | "revealed" | null;
   disabled?: boolean;
+  // Neutral selection highlight (brand accent, NOT the green "correct" state).
+  selected?: boolean;
+  // When present, renders a ↻ "change hook" control that fires without
+  // triggering the card's own onClick.
+  onRehook?: () => void;
 }
 
-export default function TweetCard({ text, idx = 0, media, onClick, state, disabled }: TweetCardProps) {
+export default function TweetCard({ text, idx = 0, media, onClick, state, disabled, selected, onRehook }: TweetCardProps) {
   const eng = ENGAGEMENTS[idx % ENGAGEMENTS.length];
   const isClickable = !!onClick;
   const items = media ?? [];
@@ -37,6 +42,7 @@ export default function TweetCard({ text, idx = 0, media, onClick, state, disabl
     "tweet-card",
     isClickable ? "tweet-card-btn" : "",
     state ? `state-${state}` : "",
+    selected ? "tweet-card-selected" : "",
   ].filter(Boolean).join(" ");
 
   const inner = (
@@ -47,6 +53,23 @@ export default function TweetCard({ text, idx = 0, media, onClick, state, disabl
           <span className="tweet-name">Bricx Labs</span>
           <span className="tweet-handle">@bricxlabs · 2h</span>
         </div>
+        {onRehook && (
+          <button
+            type="button"
+            className="tweet-rehook"
+            title="Change hook"
+            onClick={(e) => {
+              e.stopPropagation();
+              onRehook();
+            }}
+          >
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M23 4v6h-6" />
+              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+            </svg>
+            hook
+          </button>
+        )}
         <svg className="tweet-x-icon" viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
           <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
         </svg>

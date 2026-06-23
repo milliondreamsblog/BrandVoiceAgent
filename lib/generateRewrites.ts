@@ -19,7 +19,8 @@ export async function generateRewrites(
   mediaNote?: string,
   pillar?: Pillar
 ): Promise<Generation> {
-  const examples = await retrieveExamples(draft, 4);
+  // Bucket-first retrieval: anchor on this pillar's own approved examples.
+  const examples = await retrieveExamples(draft, pillar, 4);
 
   const calibration = examples
     .map((e, i) => {

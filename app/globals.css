@@ -1020,3 +1020,128 @@ details[open] .review-original-summary::before { content: "▾ "; }
 @media (max-width: 680px) {
   .review-draft-actions { margin-left: 0; width: 100%; }
 }
+
+/* ══════════════════════════════════════════════════════════════
+   TRAIN TAB — taste calibration (this-or-that) + rehook control
+   ══════════════════════════════════════════════════════════════ */
+
+/* Neutral selection highlight on a pickable tweet — brand accent, NOT the
+   green "correct" state (there is no correct answer in calibration). */
+.tweet-card-selected,
+.tweet-card-btn.tweet-card-selected:hover:not(:disabled) {
+  border-color: var(--accent);
+  box-shadow: 4px 4px 0 var(--accent);
+  transform: translate(-1px, -1px);
+}
+
+/* Each pick column = the card plus a small dimension caption under it. */
+.train-col { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.train-meta {
+  font-size: 11px;
+  color: var(--muted);
+  font-style: italic;
+  text-align: center;
+  padding: 0 4px;
+}
+
+/* Optional reason chips, revealed once a side is picked. */
+.train-chips {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 14px;
+}
+.train-chips-label {
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+  margin-right: 2px;
+}
+.train-chip {
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border: 2px solid var(--border);
+  border-radius: 999px;
+  background: var(--panel);
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.12s;
+}
+.train-chip:hover:not(:disabled) { background: var(--panel-2); }
+.train-chip.active { background: var(--text); color: #fff; border-color: var(--text); }
+.train-chip-strong.active { background: var(--accent); border-color: var(--accent); }
+.train-chip:disabled { opacity: 0.55; cursor: default; }
+
+.train-actions { justify-content: space-between; }
+
+/* The ↻ "change hook" control inside a tweet card header. */
+.tweet-rehook {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  background: var(--panel-2);
+  border: 2px solid var(--border);
+  border-radius: 999px;
+  padding: 2px 8px;
+  cursor: pointer;
+  flex-shrink: 0;
+  margin-top: 1px;
+  transition: all 0.12s;
+}
+.tweet-rehook:hover:not(:disabled) {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: #fff0ef;
+}
+.tweet-rehook:disabled { opacity: 0.55; cursor: default; }
+
+/* Rehook hook-picker popover, rendered under a rewrite in /review. */
+.rehook-pop {
+  margin: 10px 0 4px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  background: var(--panel);
+  box-shadow: var(--shadow-sm);
+  padding: 12px;
+}
+.rehook-pop-title {
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+  margin: 0 0 8px;
+}
+.rehook-opt {
+  display: block;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+  font-size: 13px;
+  line-height: 1.45;
+  padding: 9px 11px;
+  margin-bottom: 6px;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.12s;
+}
+.rehook-opt:hover:not(:disabled) {
+  transform: translate(-1px, -1px);
+  box-shadow: var(--shadow-sm);
+  border-color: var(--accent);
+}
+.rehook-opt:disabled { opacity: 0.55; cursor: default; }
+.rehook-pop-actions { display: flex; gap: 8px; align-items: center; margin-top: 4px; }
+.rehook-pop-msg { font-size: 12px; color: var(--muted); }

@@ -227,6 +227,7 @@ export default function ReviewPage() {
                       postId={post.id}
                       media={post.media}
                       idx={pi * 3 + ri}
+                      pillar={post.pillar}
                       liked={rxn.some((r) => r.rewriteId === rw.id && r.type === "like")}
                       disapproved={rxn.some(
                         (r) => r.rewriteId === rw.id && r.type === "disapprove"

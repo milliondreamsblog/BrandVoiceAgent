@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "db:push": "drizzle-kit push",
+    "db:migrate:train": "tsx scripts/migrate-train.ts",
     "db:seed": "tsx scripts/seed.ts",
+    "gen:pairs": "tsx scripts/genPairs.ts",
     "db:studio": "drizzle-kit studio",
     "test:e2e": "tsx scripts/e2e.ts"
   },

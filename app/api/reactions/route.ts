@@ -134,6 +134,9 @@ export async function POST(req: NextRequest) {
           original: post?.body ?? null,
           approvedText,
           editNotes: notes,
+          // Tag the bucket so bucket-first retrieval can surface this pick. Without
+          // this, /review picks would land bucket-less and never feed their pillar.
+          pillar: post?.pillar ?? null,
           source: "flywheel",
           sourcePostId: postId, // so deleting the draft also untrains this example
         });
