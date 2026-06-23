@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
-import TweetCard from "../components/TweetCard";
+import TrainCard from "../components/TrainCard";
 import {
   PILLAR_ORDER,
   PILLAR_META,
@@ -17,6 +17,8 @@ type Pair = {
   rightMeta: string | null;
 };
 
+type Side = "left" | "right";
+
 // Friendly name for the single dimension a pair contrasts — shown so Divij knows
 // what he's actually choosing between, which makes the calibration targeted.
 const AXIS_LABELS: Record<string, string> = {
@@ -29,6 +31,9 @@ const AXIS_LABELS: Record<string, string> = {
 };
 
 const REASON_CHIPS = ["more me", "cleaner", "better hook", "right energy", "sharper"];
+
+const EMPTY_SIDES = { left: null as string | null, right: null as string | null };
+const EMPTY_NOTES = { left: "", right: "" };
 
 function BucketBar({
   bucket,
@@ -59,9 +64,13 @@ export default function TrainPage() {
   const [bucket, setBucket] = useState<Pillar>(DEFAULT_PILLAR);
   const [pairs, setPairs] = useState<Pair[] | null>(null);
   const [idx, setIdx] = useState(0);
-  const [chosen, setChosen] = useState<"left" | "right" | null>(null);
+  const [chosen, setChosen] = useState<Side | null>(null);
   const [reasonChip, setReasonChip] = useState<string | null>(null);
   const [strong, setStrong] = useState(false);
+  // Per-side hand-refinements (edit / re-hook) and reasons. Only the CHOSEN
+  // side's refinement is committed — the rest is exploration that resets.
+  const [overrides, setOverrides] = useState<{ left: string | null; right: string | null }>(EMPTY_SIDES);
+  const [notes, setNotes] = useState<{ left: string; right: string }>(EMPTY_NOTES);
   const [submitting, setSubmitting] = useState(false);
   const [count, setCount] = useState(0);
   const [sessionId, setSessionId] = useState<string | null>(null);
@@ -71,12 +80,23 @@ export default function TrainPage() {
     setSessionId(crypto.randomUUID());
   }, []);
 
+  // Clear everything tied to the current pair (used on advance + bucket switch).
+  function resetPair() {
+    setChosen(null);
+    setReasonChip(null);
+    setStrong(false);
+    setOverrides(EMPTY_SIDES);
+    setNotes(EMPTY_NOTES);
+  }
+
   const load = useCallback(async (b: Pillar) => {
     setPairs(null);
     setIdx(0);
     setChosen(null);
     setReasonChip(null);
     setStrong(false);
+    setOverrides(EMPTY_SIDES);
+    setNotes(EMPTY_NOTES);
     try {
       const res = await fetch(`/api/train/pairs?bucket=${b}`);
       const data = await res.json();
@@ -97,16 +117,21 @@ export default function TrainPage() {
 
   const pair = pairs && idx < pairs.length ? pairs[idx] : null;
 
-  async function commit(finalChosen: "left" | "right" | "neither") {
+  async function commit(finalChosen: Side | "neither") {
     if (submitting || !pair) return;
     setSubmitting(true);
     try {
+      // Carry the chosen side's hand-refinement + reason; "neither" carries none.
+      const editedText = finalChosen === "neither" ? null : overrides[finalChosen];
+      const note = finalChosen === "neither" ? null : notes[finalChosen].trim() || null;
       await fetch("/api/train/choice", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           pairId: pair.id,
           chosen: finalChosen,
+          editedText: editedText || null,
+          note,
           reasonChip: finalChosen === "neither" ? null : reasonChip,
           strength: finalChosen !== "neither" && strong ? "strong" : null,
           sessionId,
@@ -114,9 +139,7 @@ export default function TrainPage() {
       });
       setCount((c) => c + 1);
       setIdx((i) => i + 1);
-      setChosen(null);
-      setReasonChip(null);
-      setStrong(false);
+      resetPair();
     } catch {
       // network blip — leave state intact so the same pick can be retried
     } finally {
@@ -176,27 +199,40 @@ export default function TrainPage() {
         </p>
 
         <div className="pick-grid">
-          <div className="train-col">
-            <TweetCard
-              text={pair.leftText}
-              idx={idx * 2}
-              onClick={() => !submitting && setChosen("left")}
-              selected={chosen === "left"}
-              disabled={submitting}
-            />
-            {pair.leftMeta && <span className="train-meta">{pair.leftMeta}</span>}
-          </div>
-          <div className="train-col">
-            <TweetCard
-              text={pair.rightText}
-              idx={idx * 2 + 1}
-              onClick={() => !submitting && setChosen("right")}
-              selected={chosen === "right"}
-              disabled={submitting}
-            />
-            {pair.rightMeta && <span className="train-meta">{pair.rightMeta}</span>}
-          </div>
+          <TrainCard
+            key={`${pair.id}-left`}
+            text={pair.leftText}
+            meta={pair.leftMeta}
+            idx={idx * 2}
+            pillar={bucket}
+            selected={chosen === "left"}
+            disabled={submitting}
+            override={overrides.left}
+            note={notes.left}
+            onSelect={() => !submitting && setChosen("left")}
+            onOverride={(t) => setOverrides((s) => ({ ...s, left: t }))}
+            onNote={(t) => setNotes((s) => ({ ...s, left: t }))}
+          />
+          <TrainCard
+            key={`${pair.id}-right`}
+            text={pair.rightText}
+            meta={pair.rightMeta}
+            idx={idx * 2 + 1}
+            pillar={bucket}
+            selected={chosen === "right"}
+            disabled={submitting}
+            override={overrides.right}
+            note={notes.right}
+            onSelect={() => !submitting && setChosen("right")}
+            onOverride={(t) => setOverrides((s) => ({ ...s, right: t }))}
+            onNote={(t) => setNotes((s) => ({ ...s, right: t }))}
+          />
         </div>
+
+        <p className="train-refine-hint">
+          Tip: ✎ rewrite it · 💬 say why · ↻ try a new hook — the more you shape
+          your pick, the sharper the writer gets.
+        </p>
 
         {chosen && (
           <div className="train-chips">
@@ -251,7 +287,8 @@ function Header() {
       <h1>Train</h1>
       <p className="sub">
         Pick the version that sounds more like you. Both are on-voice — there&apos;s
-        no wrong answer, only your taste. Every pick trains the writer.
+        no wrong answer, only your taste. Tweak it, say why, or swap the hook to
+        train the writer harder.
       </p>
     </header>
   );

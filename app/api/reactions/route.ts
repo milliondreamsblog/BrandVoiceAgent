@@ -9,7 +9,7 @@
 export const runtime = "nodejs";
 
 import { NextRequest, NextResponse } from "next/server";
-import { and, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import {
   posts,
@@ -91,32 +91,38 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: true });
     }
 
-    // ── pick: terminal. Mark reviewed, flag the winner, feed the flywheel ──
+    // ── pick: terminal. Promote to taste_examples FIRST, then mark reviewed &
+    //    flag the winner. Promotion-before-flip means a failed promotion leaves
+    //    the post pending (retryable) instead of silently reviewed-but-unpromoted.
+    //    Idempotent: a post that already has a pick short-circuits, so a
+    //    double-click can't duplicate the pick row or the training example.
     if (type === "pick") {
       if (!rewriteId) {
         return NextResponse.json({ error: "rewriteId required" }, { status: 400 });
       }
-      await db.insert(reactions).values({ postId, rewriteId, type: "pick" });
-      await db.update(posts).set({ status: "reviewed" }).where(eq(posts.id, postId));
-      await db
-        .update(rewritesTable)
-        .set({ recommended: false })
-        .where(eq(rewritesTable.postId, postId));
-      await db
-        .update(rewritesTable)
-        .set({ recommended: true })
-        .where(eq(rewritesTable.id, rewriteId));
 
-      // Promote to taste_examples so the next critique is better-anchored.
+      const priorPick = await db
+        .select()
+        .from(reactions)
+        .where(and(eq(reactions.postId, postId), eq(reactions.type, "pick")));
+      if (priorPick.length) {
+        return NextResponse.json({ ok: true, picked: true, already: true });
+      }
+
+      // Gather everything the promotion needs BEFORE any state change.
       const [post] = await db.select().from(posts).where(eq(posts.id, postId));
       const [rw] = await db
         .select()
         .from(rewritesTable)
         .where(eq(rewritesTable.id, rewriteId));
+      // Most-recent edit wins, deterministically (the edit handler keeps one
+      // row, but order the read so a stray row can never promote stale text).
       const editRows = await db
         .select()
         .from(reactions)
-        .where(and(eq(reactions.rewriteId, rewriteId), eq(reactions.type, "edit")));
+        .where(and(eq(reactions.rewriteId, rewriteId), eq(reactions.type, "edit")))
+        .orderBy(desc(reactions.createdAt))
+        .limit(1);
       const commentRows = await db
         .select()
         .from(reactions)
@@ -129,6 +135,8 @@ export async function POST(req: NextRequest) {
           .filter(Boolean)
           .join(" | ") || null;
 
+      // Promote first — this is the whole point of pick. If it throws, nothing
+      // below runs and the post stays pending for a clean retry.
       if (approvedText) {
         await db.insert(tasteExamples).values({
           original: post?.body ?? null,
@@ -141,6 +149,19 @@ export async function POST(req: NextRequest) {
           sourcePostId: postId, // so deleting the draft also untrains this example
         });
       }
+
+      // Record the pick + mark reviewed + flag the winner.
+      await db.insert(reactions).values({ postId, rewriteId, type: "pick" });
+      await db.update(posts).set({ status: "reviewed" }).where(eq(posts.id, postId));
+      await db
+        .update(rewritesTable)
+        .set({ recommended: false })
+        .where(eq(rewritesTable.postId, postId));
+      await db
+        .update(rewritesTable)
+        .set({ recommended: true })
+        .where(eq(rewritesTable.id, rewriteId));
+
       return NextResponse.json({ ok: true, picked: true });
     }
 

@@ -161,7 +161,11 @@ export const tasteChoices = pgTable("taste_choices", {
   pillar: text("pillar").$type<Pillar>().notNull(),
   axis: text("axis").notNull(),
   chosen: text("chosen").notNull(), // left | right | neither
-  chosenText: text("chosen_text"), // the winning text (null when 'neither')
+  chosenText: text("chosen_text"), // the winning *variant* he picked (null when 'neither')
+  // Divij's hand-refinement of the winning side — a manual edit and/or a re-hook.
+  // Null when he kept the variant as-is. The chosen→edited delta is itself a taste
+  // signal, and when present this (not chosenText) is what promotes as approved.
+  editedText: text("edited_text"),
   strength: text("strength"), // mild | strong (nullable)
   reasonChip: text("reason_chip"), // one-tap "why" (nullable)
   note: text("note"), // optional free text (nullable, usually skipped)

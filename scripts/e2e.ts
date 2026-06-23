@@ -13,7 +13,9 @@
  *   5. Train calibration   — seed taste_pairs, GET /api/train/pairs (deck +
  *                            exclude-chosen), POST /api/train/choice (left →
  *                            taste_choices + source='game' promotion with the
- *                            rejected side as `original`; neither → no promotion)
+ *                            rejected side as `original`; neither → no promotion;
+ *                            hand-refine → edited_text stored + refined text
+ *                            promoted as approved; no-op edit → not recorded)
  *   6. Rehook              — POST /api/rewrites/rehook returns on-voice hooks
  *   7. Delete + untrain    — DELETE removes the post, its rewrites, reactions,
  *                            AND its flywheel example; seed rows untouched
@@ -254,8 +256,20 @@ async function run() {
     VALUES ('experiment', 'length', ${tag + " LEFT — terse"}, ${tag + " RIGHT — long"},
             'terse', 'long', 'e2e')
     RETURNING id`) as { id: string }[];
-  trainPairIds = [pairLeft.id, pairNeither.id];
-  check("seeded 2 e2e taste_pairs", trainPairIds.every(Boolean));
+  // Two more for the hand-refine path: one Divij rewrites, one he "edits" to the
+  // same text (a no-op the API must not record as an edit).
+  const [pairEdit] = (await sql`
+    INSERT INTO taste_pairs (pillar, axis, left_text, right_text, left_meta, right_meta, source)
+    VALUES ('experiment', 'hook', ${tag + " LEFT — stock hook"}, ${tag + " RIGHT — other hook"},
+            'stock', 'other', 'e2e')
+    RETURNING id`) as { id: string }[];
+  const [pairNoop] = (await sql`
+    INSERT INTO taste_pairs (pillar, axis, left_text, right_text, left_meta, right_meta, source)
+    VALUES ('experiment', 'hook', ${tag + " LEFT — noop"}, ${tag + " RIGHT — noop2"},
+            'a', 'b', 'e2e')
+    RETURNING id`) as { id: string }[];
+  trainPairIds = [pairLeft.id, pairNeither.id, pairEdit.id, pairNoop.id];
+  check("seeded 4 e2e taste_pairs", trainPairIds.every(Boolean));
 
   const deck1 = await api("GET", "/api/train/pairs?bucket=experiment");
   check("GET train pairs → 200", deck1.status === 200, `status ${deck1.status}`);
@@ -315,6 +329,52 @@ async function run() {
     SELECT count(*)::int c FROM taste_examples
     WHERE source='game' AND original=${tag + " RIGHT — long"}`);
   eq("neither: NOT promoted to taste_examples", ge2, 0);
+
+  // choose LEFT but hand-refine it (the new /train edit/rehook signal) → the
+  // variant is kept in chosen_text, the refinement in edited_text, and the
+  // REFINED text (not the variant) is what promotes.
+  const myWords = tag + " LEFT — in my own words";
+  const choice3 = await api("POST", "/api/train/choice", {
+    pairId: pairEdit.id, chosen: "left", editedText: myWords,
+    note: "felt more like me", reasonChip: "more me", sessionId: sid,
+  });
+  eq("POST choice(refined) → 200", choice3.status, 200);
+  eq("choice(refined) promoted:true", choice3.json?.promoted, true);
+  eq("choice(refined) edited:true", choice3.json?.edited, true);
+
+  const ch3 = (await sql`
+    SELECT chosen_text, edited_text, note FROM taste_choices WHERE pair_id=${pairEdit.id}`) as any[];
+  eq("refined: one choice row", ch3.length, 1);
+  eq("refined: chosen_text keeps the original variant", ch3[0]?.chosen_text, tag + " LEFT — stock hook");
+  eq("refined: edited_text holds the refinement", ch3[0]?.edited_text, myWords);
+  eq("refined: note persisted", ch3[0]?.note, "felt more like me");
+
+  const ge3 = (await sql`
+    SELECT approved_text, original, edit_notes FROM taste_examples
+    WHERE source='game' AND approved_text=${myWords}`) as any[];
+  eq("refined: 1 promotion using the refined text as approved", ge3.length, 1);
+  eq("refined: original = rejected side (right)", ge3[0]?.original, tag + " RIGHT — other hook");
+  check("refined: edit_notes flags the hand-refine + carries note/chip",
+    !!ge3[0]?.edit_notes &&
+      ge3[0].edit_notes.includes("felt more like me") &&
+      ge3[0].edit_notes.includes("more me") &&
+      ge3[0].edit_notes.includes("hand-refined"),
+    `edit_notes=${JSON.stringify(ge3[0]?.edit_notes)}`);
+
+  // editedText identical to the picked variant is a no-op: not recorded as an
+  // edit, and the plain variant is what promotes.
+  const choice4 = await api("POST", "/api/train/choice", {
+    pairId: pairNoop.id, chosen: "left", editedText: tag + " LEFT — noop", sessionId: sid,
+  });
+  eq("POST choice(noop edit) → 200", choice4.status, 200);
+  eq("choice(noop edit) edited:false", choice4.json?.edited, false);
+  const ch4 = (await sql`
+    SELECT edited_text FROM taste_choices WHERE pair_id=${pairNoop.id}`) as any[];
+  eq("noop: edited_text stays null", ch4[0]?.edited_text, null);
+  const ge4 = (await sql`
+    SELECT approved_text FROM taste_examples
+    WHERE source='game' AND approved_text=${tag + " LEFT — noop"}`) as any[];
+  eq("noop: promotes the plain variant", ge4.length, 1);
 
   // validation
   const badChoice = await api("POST", "/api/train/choice", { pairId: pairLeft.id, chosen: "bogus" });
@@ -391,7 +451,8 @@ async function run() {
       WHERE left_text LIKE ${like(tag)} OR right_text LIKE ${like(tag)}`), 0);
   eq("no e2e taste_choices residue",
     await count(sql`SELECT count(*)::int c FROM taste_choices
-      WHERE COALESCE(chosen_text,'') LIKE ${like(tag)}`), 0);
+      WHERE COALESCE(chosen_text,'') LIKE ${like(tag)}
+         OR COALESCE(edited_text,'') LIKE ${like(tag)}`), 0);
   eq("seed taste_examples intact",
     await count(sql`SELECT count(*)::int c FROM taste_examples WHERE source='seed'`), seedTaste);
 }

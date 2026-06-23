@@ -8,6 +8,8 @@
     "start": "next start",
     "db:push": "drizzle-kit push",
     "db:migrate:train": "tsx scripts/migrate-train.ts",
+    "db:audit:pairs": "tsx scripts/audit-pairs.ts",
+    "db:backup:pairs": "tsx scripts/backup-pairs.ts",
     "db:seed": "tsx scripts/seed.ts",
     "gen:pairs": "tsx scripts/genPairs.ts",
     "db:studio": "drizzle-kit studio",

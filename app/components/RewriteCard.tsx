@@ -55,24 +55,38 @@ export default function RewriteCard({
   const [rehookLoading, setRehookLoading] = useState(false);
   const [rehookHooks, setRehookHooks] = useState<string[] | null>(null);
   const [rehookErr, setRehookErr] = useState<string | null>(null);
+  // A hook the reviewer is PREVIEWING in the card. Nothing is persisted until
+  // they hit "Pick this one ↑" — selecting a hook only swaps the visible first
+  // line so they can read each option in context first.
+  const [previewHook, setPreviewHook] = useState<string | null>(null);
+
+  // Fire a single reaction write (no reload). `react` wraps it with a reload;
+  // multi-write flows (pick-with-rehook) post twice then reload once.
+  async function postReaction(body: Record<string, unknown>) {
+    await fetch("/api/reactions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ postId, rewriteId: rewrite.id, ...body }),
+    });
+  }
 
   async function react(body: Record<string, unknown>) {
     setBusy(true);
     try {
-      await fetch("/api/reactions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ postId, rewriteId: rewrite.id, ...body }),
-      });
+      await postReaction(body);
       await onAfter();
     } finally {
       setBusy(false);
     }
   }
 
-  // The text a rehook operates on / a pick promotes: Divij's saved edit if any,
-  // else the rewrite itself.
+  // The persisted base a rehook operates on / a pick promotes: Divij's saved
+  // edit if any, else the rewrite itself.
   const currentText = edit ?? rewrite.text;
+  // What the card actually shows: the previewed hook swapped into line 1 when
+  // one is selected, otherwise the current text. Preview only — not saved.
+  const displayText =
+    previewHook != null ? swapFirstLine(currentText, previewHook) : currentText;
 
   async function openRehook() {
     if (rehookOpen) {
@@ -103,13 +117,28 @@ export default function RewriteCard({
     }
   }
 
-  // Swap the chosen hook into the first line and PERSIST as an edit, so the
-  // re-hooked version is what gets promoted on pick.
-  async function applyHook(hook: string) {
-    const newText = swapFirstLine(currentText, hook);
-    await react({ type: "edit", payload: newText });
-    setRehookOpen(false);
-    setRehookHooks(null);
+  // Selecting a hook only PREVIEWS it (toggle off by re-tapping). Nothing is
+  // written here — the choice is committed when "Pick this one ↑" runs.
+  function previewOrToggle(hook: string) {
+    setPreviewHook((cur) => (cur === hook ? null : hook));
+  }
+
+  // Terminal: if a hook is being previewed, persist it as the edit (so the
+  // flywheel promotes the re-hooked text) and THEN pick. Otherwise just pick.
+  async function pickThis() {
+    setBusy(true);
+    try {
+      if (previewHook != null) {
+        await postReaction({
+          type: "edit",
+          payload: swapFirstLine(currentText, previewHook),
+        });
+      }
+      await postReaction({ type: "pick" });
+      await onAfter();
+    } finally {
+      setBusy(false);
+    }
   }
 
   return (
@@ -124,22 +153,25 @@ export default function RewriteCard({
         </div>
       </div>
 
-      {/* Show the LIVE text (Divij's edit / re-hooked version if any), so the
-          rehook visibly rewrites the card's first line — not just the edit block. */}
-      <TweetCard text={currentText} media={media} idx={idx} onRehook={openRehook} />
+      {/* Show the live text: the previewed hook (if one is selected) swapped
+          into the first line, else Divij's current text. */}
+      <TweetCard text={displayText} media={media} idx={idx} onRehook={openRehook} />
 
       {rehookOpen && (
         <div className="rehook-pop">
-          <p className="rehook-pop-title">↻ change the hook — pick a new opening line</p>
+          <p className="rehook-pop-title">
+            ↻ change the hook — tap to preview, then “Pick this one” to keep
+          </p>
           {rehookLoading && <p className="rehook-pop-msg">Generating hooks…</p>}
           {rehookErr && <p className="rehook-pop-msg">{rehookErr}</p>}
           {rehookHooks?.map((h, i) => (
             <button
               key={i}
-              className="rehook-opt"
+              className={`rehook-opt${previewHook === h ? " active" : ""}`}
               disabled={busy}
-              onClick={() => applyHook(h)}
+              onClick={() => previewOrToggle(h)}
             >
+              {previewHook === h ? "👁 previewing — " : ""}
               {h}
             </button>
           ))}
@@ -151,7 +183,36 @@ export default function RewriteCard({
             >
               Close
             </button>
+            {previewHook != null && (
+              <button
+                className="btn-ghost"
+                onClick={() => setPreviewHook(null)}
+                disabled={busy}
+                title="Drop the preview and show the original opening line"
+              >
+                ↺ Use original
+              </button>
+            )}
           </div>
+        </div>
+      )}
+
+      {/* Persistent reminder so a previewed-but-unsaved hook is never silent —
+          and a top-level revert that works even after the popover is closed. */}
+      {previewHook != null && (
+        <div className="preview-banner">
+          <span className="preview-banner-text">
+            👁 Previewing a new hook — <strong>not saved.</strong> “Pick this
+            one ↑” keeps it.
+          </span>
+          <button
+            className="preview-banner-revert"
+            onClick={() => setPreviewHook(null)}
+            disabled={busy}
+            title="Drop the preview and show the original opening line"
+          >
+            ↺ revert
+          </button>
         </div>
       )}
 
@@ -193,9 +254,9 @@ export default function RewriteCard({
         <button
           className={`rw-btn${editOpen ? " open" : ""}`}
           onClick={() => {
-            // Re-seed the textarea with the latest saved text (e.g. after a
-            // rehook) when opening, so Save can't silently revert it.
-            if (!editOpen) setEditText(currentText);
+            // Re-seed the textarea with what's on screen (incl. a previewed
+            // hook) when opening, so Save can't silently revert it.
+            if (!editOpen) setEditText(displayText);
             setEditOpen((v) => !v);
           }}
           disabled={busy}
@@ -227,6 +288,7 @@ export default function RewriteCard({
               disabled={busy}
               onClick={async () => {
                 await react({ type: "edit", payload: editText });
+                setPreviewHook(null); // saved text is now the base
                 setEditOpen(false);
               }}
             >
@@ -263,10 +325,14 @@ export default function RewriteCard({
 
       <button
         className={`btn rw-pick${picked ? " rw-pick-done" : ""}`}
-        disabled={busy || (anyPicked && !picked)}
-        onClick={() => react({ type: "pick" })}
+        disabled={busy || anyPicked}
+        onClick={pickThis}
       >
-        {picked ? "✓ Picked" : "Pick this one ↑"}
+        {picked
+          ? "✓ Picked"
+          : previewHook != null
+          ? "Pick this one ↑ (with new hook)"
+          : "Pick this one ↑"}
       </button>
     </div>
   );

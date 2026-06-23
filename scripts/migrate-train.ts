@@ -6,10 +6,12 @@
 // with IF NOT EXISTS, so it can run non-interactively and re-run safely. It
 // mirrors lib/db/schema.ts exactly, so a later `drizzle-kit push` sees no diff.
 //
-// Changes (all additive — zero ALTER/DROP on existing columns):
-//   • taste_examples.pillar  — new nullable column
-//   • taste_pairs            — new table (+ pillar/axis index)
-//   • taste_choices          — new table (FK → taste_pairs, ON DELETE CASCADE)
+// Changes (all additive — zero DROP, only IF-NOT-EXISTS adds on existing columns):
+//   • taste_examples.pillar     — new nullable column
+//   • taste_pairs               — new table (+ pillar/axis index)
+//   • taste_choices             — new table (FK → taste_pairs, ON DELETE CASCADE)
+//   • taste_choices.edited_text — new nullable column (Divij's hand-refinement of
+//                                 the winning side; promoted as approved when set)
 
 import * as dotenv from "dotenv";
 dotenv.config({ path: ".env.local" });
@@ -57,6 +59,12 @@ async function main() {
       created_at timestamptz NOT NULL DEFAULT now()
     )`;
 
+  // Added after the first /train ship: Divij's hand-refinement of the winning
+  // side. Guarded so this whole script stays re-runnable on a DB that already
+  // has the table from the earlier migration.
+  console.log("→ taste_choices.edited_text (nullable text)…");
+  await sql`ALTER TABLE taste_choices ADD COLUMN IF NOT EXISTS edited_text text`;
+
   // Prove the shape landed.
   const cols = (await sql`
     SELECT column_name FROM information_schema.columns
@@ -65,11 +73,15 @@ async function main() {
     SELECT table_name FROM information_schema.tables
     WHERE table_name IN ('taste_pairs','taste_choices')
     ORDER BY table_name`) as { table_name: string }[];
+  const editedCol = (await sql`
+    SELECT column_name FROM information_schema.columns
+    WHERE table_name='taste_choices' AND column_name='edited_text'`) as unknown[];
 
   console.log(
-    `✅ migrate-train complete. taste_examples.pillar present: ${cols.length === 1}; tables: ${tables
-      .map((t) => t.table_name)
-      .join(", ")}`
+    `✅ migrate-train complete. taste_examples.pillar present: ${cols.length === 1}; ` +
+      `taste_choices.edited_text present: ${editedCol.length === 1}; tables: ${tables
+        .map((t) => t.table_name)
+        .join(", ")}`
   );
 }
 
