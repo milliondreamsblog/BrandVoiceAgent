@@ -20,7 +20,7 @@ const STOP = new Set(
   )
 );
 
-function tokens(s: string): string[] {
+export function tokens(s: string): string[] {
   return (s.toLowerCase().match(/[a-z0-9']+/g) ?? []).filter(
     (t) => t.length > 2 && !STOP.has(t)
   );

@@ -175,6 +175,35 @@ export const tasteChoices = pgTable("taste_choices", {
     .notNull(),
 });
 
+// ── Content Ideation Agent (the upstream front-stage) ───────────────────────
+// Idea seeds mined from the founder's pasted material (brain-dump / tl;dv
+// transcript), segmented into the 3 pillars. Approving a seed is queue-only (no
+// model spend); a separate "draft" step inserts a batch-less posts row + runs the
+// existing generation pipeline, then links post_id back here.
+export const ideas = pgTable(
+  "ideas",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    source: text("source").notNull(), // braindump | tldv
+    rawInput: text("raw_input"), // the pasted source (truncated), for traceability
+    seed: text("seed").notNull(), // one-line hook
+    angle: text("angle").notNull(), // 1-2 sentences → becomes posts.body on draft
+    bucket: text("bucket").$type<Pillar>().notNull(), // company | experiment | design
+    confidence: integer("confidence"), // 0-100, model-scored, for queue ordering
+    sourceQuote: text("source_quote"), // the source line it was grounded in
+    status: text("status").notNull().default("pending"), // pending | approved | rejected
+    // The drafted post, set on the draft step. set null (NOT cascade) so deleting a
+    // draft keeps the idea's history.
+    postId: uuid("post_id").references(() => posts.id, { onDelete: "set null" }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (t) => ({
+    statusBucketIdx: index("ideas_status_bucket_idx").on(t.status, t.bucket),
+  })
+);
+
 // Relations (for Drizzle's query API: db.query.posts.findMany({ with: { rewrites } }))
 export const batchesRelations = relations(batches, ({ many }) => ({
   posts: many(posts),
@@ -208,4 +237,8 @@ export const tasteChoicesRelations = relations(tasteChoices, ({ one }) => ({
     fields: [tasteChoices.pairId],
     references: [tastePairs.id],
   }),
+}));
+
+export const ideasRelations = relations(ideas, ({ one }) => ({
+  post: one(posts, { fields: [ideas.postId], references: [posts.id] }),
 }));
