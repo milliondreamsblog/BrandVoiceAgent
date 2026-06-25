@@ -5,7 +5,50 @@ _If you're a new session: read this top-to-bottom, then `lib/db/schema.ts`, `lib
 
 ---
 
-## PART 0 — VERIFIED BUILD SPEC (2026-06-23) — READ FIRST; supersedes rough notes below
+## ★ SHIPPED STATE — 2026-06-23 (READ THIS FIRST; supersedes the build plan in PART 0–5 below)
+
+**The entire `/train` + rehook plan below is BUILT, committed, and DEPLOYED.** Commit **`ba0fd67`** on `main` → live at https://tone-app-phi.vercel.app (remote `github.com/milliondreamsblog/BrandVoiceAgent`). PART 0–5 are now historical reference (the spec we built to).
+
+### 🔴 #1 BLOCKER — Anthropic API credits EXHAUSTED (demo-critical, account-level, NOT code)
+- Mid-session the Anthropic account ran **out of credits** (drained by 2 e2e runs + the deck-regen attempt). Error on every Opus call: `400 invalid_request_error — "Your credit balance is too low to access the Anthropic API."`
+- **Effect:** every model call on prod fails RIGHT NOW — `/api/posts` (generate rewrites), `/api/critique`, `/api/rewrites/rehook`. The deployed code is healthy; the **account balance is empty**.
+- **Fix (only the user can do this):** top up at console.anthropic.com → **Plans & Billing**. Until then the live AI demo will error out. **Rotating the key does NOT help** (same account/balance). Topping up is separate from the post-demo key rotation.
+
+### ✅ Shipped this session (commit `ba0fd67`, clean message — no Claude trailers)
+- **R1 — /review rehook preview-before-commit** (`app/components/RewriteCard.tsx`): previews the new hook with a persistent "not saved" revert banner; persists via `type:'edit'` then `type:'pick'`.
+- **R2 — /train edit · comment · rehook** (`app/components/TrainCard.tsx`, both sides): Edit / Why / Hook controls; `edited_text` captured on choice → promoted to `taste_examples` as hand-refined ground truth; per-pair state reset (`app/train/page.tsx` renders two cards keyed `${pair.id}-left/-right`).
+- **reactions pick refactor** (`app/api/reactions/route.ts`): promote-to-flywheel BEFORE flip→reviewed; idempotent prior-pick short-circuit (blocks double-click dupes); most-recent-edit-wins.
+- **schema** (`lib/db/schema.ts`): `taste_choices.edited_text` — **migrated to prod ✅** via idempotent `scripts/migrate-train.ts` (`db:migrate:train`). Verified: `taste_choices.edited_text present: true`.
+- **genPairs** (`scripts/genPairs.ts`): number-anchored high-contrast prompts + **delete-guard floor `MIN_PER_PILLAR=18`** — **validated for real today**: the credit-starved regen aborted (`✗ ABORTED — new run too thin`) WITHOUT wiping the live deck. This guard is the only reason a failed paid run didn't destroy the deck.
+- **scripts:** `db:audit:pairs`, `db:backup:pairs` (+ package.json); `scripts/e2e.ts` expanded for the `edited_text` refine + no-op paths → **111/111 green**.
+
+### ✅ Verified this session
+- Local e2e **111/111** ("🟢 GREEN — Safe to deploy to prod").
+- Prod deploy **healthy**: `/`, `/review`, `GET /api/train/pairs?bucket=*` all 200; bad bucket → 400 (read-only smoke, no Opus).
+- Live deck **INTACT**: 18/18/18 (design/company/experiment). Reversible backup at `scripts/backups/taste_pairs-2026-06-23T11-11-35-315Z.json` (54 rows).
+
+### ⏳ PENDING (priority order — all gated on credits except #4/#5)
+1. **Top up API credits** → unblocks the entire live demo. Nothing AI works on prod until this is done.
+2. **High-contrast deck regen** — `npm run gen:pairs` (~$3–6, ~54 Opus calls). Blocked ONLY on credits; the delete-guard makes retry safe. After success: `npm run db:audit:pairs` (verify contrast/overlap), optionally `db:backup:pairs` first. Prod currently serves the OLD 18/pillar deck — it works, just lower contrast than Divij's "lots of contrast" ask.
+3. **Final prod e2e** — `E2E_BASE_URL=https://tone-app-phi.vercel.app npm run test:e2e` (gold-standard deployed-new-code check; self-cleaning). Needs credits (4 Opus calls). Local 111/111 stands in until then.
+4. **Clean 3 e2e orphans in the LIVE /review queue** — a truncated test run left 3 `e2e-1782211961268…` pending posts visible in /review. **User opted to clean manually:** `npx tsx scripts/_clean-orphans.ts --apply` (with `npm run dev` up). That script is UNCOMMITTED (untracked) — delete it after use. (Inspect first without `--apply`.)
+5. **Visual confirm** the R1/R2 controls render in the demo browser (frontend bundle — automated version-detection is unreliable).
+
+### ⚠ Quality gaps carried forward (known, non-blocking)
+- `genPairs` `register` axis uses `valid:()=>true` — relies only on the 0.6 word-overlap floor for contrast (no semantic check). Other axes validate (`hook`, `length`, `claim_density` number-anchored, etc.).
+- `sessionId` may be null on a very fast pick → resume falls back to globally-un-chosen (acceptable lean cut).
+- RewriteCard held-preview can rebase if the underlying rewrite text changes mid-preview (edge case).
+- `/train` edit text is not trimmed before persist.
+- `neither`/`skip` discards any in-progress edit text (by design).
+- Duplicate `swapFirstLine`: `RewriteCard.tsx` keeps a local copy byte-identical to `lib/text.ts`; `TrainCard.tsx` imports the shared one correctly. Deferred cleanup, not a bug.
+
+### NEXT (after demo + credits; gated on Divij saying /train works "perfectly")
+- **Content-ideation agent** — segment ideas into 2 buckets (agency-updates & experiments). Open questions unchanged (PART 4 #2). Lock bucket↔pillar mapping with Divij first (working assumption: agency-updates = `company`, experiments = `experiment`).
+- **Cost optimization** (the phase the user explicitly deferred to AFTER finishing): prompt-cache the ~7.5K-token voice rubric across the 4 Opus call sites; cap `/api/posts` batch (≤10). Full audit in memory file `api-cost-shape.md`.
+
+---
+
+## PART 0 (HISTORICAL — now BUILT & shipped) — VERIFIED BUILD SPEC (2026-06-23) — READ FIRST; supersedes rough notes below
 
 Plan adversarially verified against the real code by 7 agents (141 tool calls). Per-area: schema **GREEN**, genPairs **GREEN**, /train-UI **GREEN**, retrieval **AMBER**, rehook **AMBER**, cross-cutting **AMBER** → **GREEN to build once the 3 blockers below are honored (now baked into this spec).** Full scope ≈ 9–12h (NOT by 1 PM). **Leanest 1 PM cut ≈ 4–5h and includes rehook** (end of this section).
 
