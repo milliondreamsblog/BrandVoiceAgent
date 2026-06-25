@@ -10,14 +10,15 @@ import { db } from "@/lib/db";
 import {
   batches,
   posts,
-  rewrites as rewritesTable,
   tasteExamples,
   type MediaItem,
 } from "@/lib/db/schema";
-import { generateRewrites } from "@/lib/generateRewrites";
+import { generateAndPersist } from "@/lib/persistRewrites";
+import { isConfigured } from "@/lib/anthropic";
 import { coercePillar, isPillar } from "@/lib/pillars";
 
 const PAGE_SIZE = 10;
+const MAX_BATCH = 20; // bound worst-case spend: one fat submit can't fan out into unbounded Opus calls
 
 type IncomingPost = { body: string; media?: MediaItem[]; pillar?: string };
 
@@ -29,6 +30,20 @@ export async function POST(req: NextRequest) {
     );
     if (!incoming.length) {
       return NextResponse.json({ error: "No posts provided" }, { status: 400 });
+    }
+    if (incoming.length > MAX_BATCH) {
+      return NextResponse.json(
+        { error: `Too many posts (${incoming.length}); max ${MAX_BATCH} per submit.` },
+        { status: 400 }
+      );
+    }
+    // Fail fast on a missing key — otherwise every per-post call hits the placeholder
+    // key, 401s, gets swallowed below, and the writer silently gets a 0-rewrite batch.
+    if (!isConfigured()) {
+      return NextResponse.json(
+        { error: "ANTHROPIC_API_KEY is not configured" },
+        { status: 503 }
+      );
     }
 
     const [batch] = await db
@@ -50,49 +65,27 @@ export async function POST(req: NextRequest) {
       )
       .returning();
 
-    // Generate rewrites for every post in parallel (writer can wait a few
-    // seconds; Divij's review page stays instant because they're pre-computed).
-    await Promise.all(
-      insertedPosts.map(async (post) => {
-        try {
-          const mediaNote = describeMedia(post.media as MediaItem[]);
-          const gen = await generateRewrites(post.body, mediaNote, post.pillar);
+    // Generate rewrites. Process the first post alone so its call WRITES the shared
+    // voice-rubric cache, then fan the rest out in parallel to READ it. Firing all
+    // posts at once (the old behavior) makes each pay the 1.25x cache-write premium
+    // because none can read a cache the others are still writing.
+    const processPost = async (post: (typeof insertedPosts)[number]) => {
+      try {
+        await generateAndPersist({
+          id: post.id,
+          body: post.body,
+          media: post.media as MediaItem[],
+          pillar: post.pillar,
+        });
+      } catch (e) {
+        console.error(`Generation failed for post ${post.id}:`, e);
+        // Leave the post with zero rewrites; the review UI shows a retry.
+      }
+    };
 
-          // Defensive: the model can occasionally emit an empty or duplicate-label
-          // entry. Keep only non-empty rewrites, one per label, so Divij's queue
-          // never shows a blank card.
-          const seen = new Set<string>();
-          const clean = gen.rewrites.filter((r) => {
-            if (!r.text?.trim() || !["A", "B", "C"].includes(r.label)) return false;
-            if (seen.has(r.label)) return false;
-            seen.add(r.label);
-            return true;
-          });
-          if (!clean.length) throw new Error("No usable rewrites returned.");
-
-          // Make sure exactly one survives as recommended even if the model's
-          // pick got filtered out — fall back to the highest publish score.
-          let rec = gen.recommended;
-          if (!clean.some((r) => r.label === rec)) {
-            rec = clean.reduce((a, b) => (b.publish_score > a.publish_score ? b : a)).label;
-          }
-
-          await db.insert(rewritesTable).values(
-            clean.map((r) => ({
-              postId: post.id,
-              label: r.label,
-              text: r.text,
-              rationale: r.rationale,
-              publishScore: r.publish_score,
-              recommended: r.label === rec,
-            }))
-          );
-        } catch (e) {
-          console.error(`Generation failed for post ${post.id}:`, e);
-          // Leave the post with zero rewrites; the review UI shows a retry.
-        }
-      })
-    );
+    const [firstPost, ...restPosts] = insertedPosts;
+    if (firstPost) await processPost(firstPost);
+    if (restPosts.length) await Promise.all(restPosts.map(processPost));
 
     return NextResponse.json({ batchId: batch.id, count: insertedPosts.length });
   } catch (e) {
@@ -172,14 +165,4 @@ export async function DELETE(req: NextRequest) {
     console.error("DELETE /api/posts failed:", e);
     return NextResponse.json({ error: String(e) }, { status: 500 });
   }
-}
-
-function describeMedia(media: MediaItem[]): string | undefined {
-  if (!media?.length) return undefined;
-  const imgs = media.filter((m) => m.type === "image").length;
-  const vids = media.filter((m) => m.type === "video").length;
-  const parts: string[] = [];
-  if (imgs) parts.push(`${imgs} image${imgs > 1 ? "s" : ""}`);
-  if (vids) parts.push(`${vids} video${vids > 1 ? "s" : ""}`);
-  return parts.join(" and ");
 }
