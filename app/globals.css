@@ -1199,3 +1199,179 @@ details[open] .review-original-summary::before { content: "▾ "; }
 }
 .preview-banner-revert:hover:not(:disabled) { border-color: var(--accent); }
 .preview-banner-revert:disabled { opacity: 0.55; cursor: default; }
+
+/* ══════════════════════════════════════════════════════════════
+   COMPETITORS TAB — ranked posts + tier accordion + agency modal
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── Ranked post card (twitter card + rank badge + why) ── */
+.comp-ranked { display: flex; flex-direction: column; gap: 20px; }
+
+/* Top posts as a 3-up box grid (the modal keeps .comp-ranked = full width). */
+.comp-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  align-items: stretch;
+}
+@media (max-width: 1100px) { .comp-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 680px)  { .comp-grid { grid-template-columns: 1fr; } }
+
+/* Each grid item is a self-contained box: equal height, compact, footer pinned. */
+.comp-grid .comp-post { display: flex; flex-direction: column; height: 100%; }
+.comp-grid .tweet-body {
+  padding-left: 0;
+  font-size: 14px;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  line-clamp: 4;
+  overflow: hidden;
+}
+.comp-grid .tweet-actions { padding-left: 0; gap: 2px; }
+.comp-grid .tweet-action { font-size: 11px; }
+.comp-grid .tweet-action svg { width: 13px; height: 13px; }
+.comp-grid .comp-why { font-size: 12px; }
+.comp-grid .comp-viewx { margin-top: auto; padding-top: 8px; }
+
+/* Pattern cards (.card) reused in the grid: equal height, "Seen in" pinned. */
+.comp-grid .card { display: flex; flex-direction: column; height: 100%; }
+.comp-grid .card .seen-in { margin-top: auto; padding-top: 8px; }
+.comp-post { position: relative; overflow: visible; }
+.rank-badge {
+  position: absolute;
+  top: -13px;
+  left: -11px;
+  min-width: 30px;
+  height: 30px;
+  padding: 0 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 800;
+  border: 2px solid var(--border);
+  border-radius: 999px;
+  background: var(--panel);
+  box-shadow: var(--shadow-sm);
+  z-index: 2;
+}
+.rank-badge.rank-1 { background: #ffd84d; }
+.rank-badge.rank-2 { background: #d9dde2; }
+.rank-badge.rank-3 { background: #e8b487; }
+.rank-badge.rank-n { background: var(--text); color: #fff; font-size: 13px; }
+
+.comp-why {
+  font-size: 13px;
+  line-height: 1.55;
+  margin: 12px 0 0;
+  padding: 8px 11px;
+  background: var(--panel-2);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 6px 6px 0;
+}
+.comp-why strong { font-weight: 700; }
+.comp-viewx { display: inline-block; margin-top: 8px; font-size: 12px; color: var(--muted); }
+.comp-viewx:hover { color: var(--accent); }
+.comp-modal-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  font-weight: 700;
+  margin: 0 0 10px;
+}
+
+/* ── Follow-list: 2-col (accordion | helper) ── */
+.follow-split { display: grid; grid-template-columns: 1fr; gap: 16px; align-items: start; }
+@media (min-width: 900px) { .follow-split { grid-template-columns: 320px 1fr; } }
+
+.tier-acc { display: flex; flex-direction: column; gap: 8px; }
+.tier-group { display: flex; flex-direction: column; }
+.tier-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  background: var(--panel);
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  padding: 11px 14px;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.1s, box-shadow 0.1s, background 0.1s;
+}
+.tier-head:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--border); }
+.tier-group.open .tier-head {
+  background: var(--text);
+  color: #fff;
+  border-radius: 10px 10px 0 0;
+  box-shadow: none;
+}
+.tier-count { font-weight: 600; opacity: 0.75; }
+.tier-caret { font-size: 12px; }
+
+.tier-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 8px;
+  border: 2px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 10px 10px;
+  background: var(--panel-2);
+}
+.tier-desc {
+  font-size: 11px;
+  color: var(--muted);
+  margin: 0 4px 6px;
+  line-height: 1.4;
+}
+.agency-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  background: none;
+  border: none;
+  border-radius: 7px;
+  padding: 8px 10px;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.agency-row:hover { background: var(--panel); }
+.agency-dot { font-size: 9px; flex-shrink: 0; }
+.agency-name { flex: 1; min-width: 0; }
+.agency-has-post {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--accent);
+  border: 1.5px solid var(--accent);
+  border-radius: 999px;
+  padding: 1px 7px;
+  flex-shrink: 0;
+}
+.agency-tag { font-size: 10px; color: var(--muted); flex-shrink: 0; }
+
+.follow-help {
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--muted);
+  border: 2px dashed var(--panel-2);
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+.follow-help p { margin: 0 0 10px; }
+.follow-help p:last-child { margin-bottom: 0; }
+.follow-help strong { color: var(--text); }
