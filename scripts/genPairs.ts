@@ -45,6 +45,20 @@ const RULES = fs.readFileSync(
   "utf8"
 );
 
+// Calibration pairs are TRAINING DATA, not founder-facing copy — generate them on a
+// cheap model by default. The structural validators (clears/valid) + the human's pick
+// backstop quality. Set GENPAIRS_MODEL=claude-opus-4-8 if contrast quality dips.
+const MODEL = process.env.GENPAIRS_MODEL || "claude-haiku-4-5";
+const CALL_CAP = 90; // hard stop: a future AXES/PILLARS bump can't silently 10x the bill
+const PRICES: Record<string, { in: number; out: number }> = {
+  "claude-haiku-4-5": { in: 1, out: 5 },
+  "claude-haiku-4-5-20251001": { in: 1, out: 5 },
+  "claude-sonnet-4-6": { in: 3, out: 15 },
+  "claude-opus-4-8": { in: 5, out: 25 },
+};
+// Running token tally → end-of-run cost line (cheapest early-warning against another surprise bill).
+const usageTally = { in: 0, out: 0, cacheRead: 0, cacheWrite: 0 };
+
 // ── how full / how extreme ──────────────────────────────────────────────────
 const TARGET_PER_AXIS = 9; // 9 × 6 axes = 54 per bucket — comfortably past Divij's "50"
 const PER_CALL = 4; // request 4, keep the ones that clear the contrast bar
@@ -220,13 +234,19 @@ async function genFor(
   avoid: string[]
 ): Promise<Pair[]> {
   const hint = PILLAR_META[pillar].hint || "a normal post — just Divij's voice, no special steer";
-  const system = `${RULES}
-
----
+  // Rubric cached (identical every call → written once, read cheap across the sequential
+  // loop); the static job framing follows uncached.
+  const system = [
+    { type: "text", text: RULES, cache_control: { type: "ephemeral" } },
+    {
+      type: "text",
+      text: `---
 
 # Your job right now
 
-You are generating CONTRAST PAIRS to calibrate one reviewer's taste. Each pair is the SAME underlying idea written two ways, pushed to OPPOSITE EXTREMES of ONE axis. Both versions must be genuinely publishable in this voice — neither is a strawman. There is no "correct" side; the contrast is the whole point. The two sides must be UNMISTAKABLY different on the axis — a reader should never have to squint to tell which is which. Never label which is better.`;
+You are generating CONTRAST PAIRS to calibrate one reviewer's taste. Each pair is the SAME underlying idea written two ways, pushed to OPPOSITE EXTREMES of ONE axis. Both versions must be genuinely publishable in this voice — neither is a strawman. There is no "correct" side; the contrast is the whole point. The two sides must be UNMISTAKABLY different on the axis — a reader should never have to squint to tell which is which. Never label which is better.`,
+    },
+  ];
 
   // Rotate the seed emphasis by round so successive calls explore new topics.
   const seeds = SEEDS[pillar];
@@ -255,7 +275,7 @@ Rules for every pair:
 Return ${PER_CALL} pairs.`;
 
   const params = {
-    model: "claude-opus-4-8",
+    model: MODEL,
     max_tokens: 8000,
     system,
     messages: [{ role: "user", content: user }],
@@ -263,6 +283,11 @@ Return ${PER_CALL} pairs.`;
   };
 
   const res: any = await anthropic.messages.create(params as any);
+  const u = res?.usage ?? {};
+  usageTally.in += u.input_tokens ?? 0;
+  usageTally.out += u.output_tokens ?? 0;
+  usageTally.cacheRead += u.cache_read_input_tokens ?? 0;
+  usageTally.cacheWrite += u.cache_creation_input_tokens ?? 0;
   const text: string = (res?.content ?? []).find((b: any) => b?.type === "text")?.text ?? "";
   if (!text) throw new Error("empty response");
   const parsed = JSON.parse(text) as { pairs?: Pair[] };
@@ -280,6 +305,9 @@ async function main() {
       const seenKeys = new Set<string>();
       for (let round = 0; round < MAX_ROUNDS && kept.length < TARGET_PER_AXIS; round++) {
         calls++;
+        if (calls > CALL_CAP) {
+          throw new Error(`genPairs call cap (${CALL_CAP}) exceeded — aborting to avoid runaway spend`);
+        }
         let pairs: Pair[] = [];
         try {
           const avoid = kept.map((p) => p.left_text.slice(0, 40));
@@ -342,7 +370,18 @@ async function main() {
     `\nInserted ${inserts.length} taste_pairs ` +
       `(${Object.entries(byPillar).map(([p, c]) => `${p}=${c}`).join("  ")}).`
   );
-  console.log(`Opus calls: ${calls}   dropped (failed contrast bar): ${dropped}`);
+  const price = PRICES[MODEL] ?? PRICES["claude-opus-4-8"];
+  const estCost =
+    (usageTally.in * price.in +
+      usageTally.cacheWrite * price.in * 1.25 +
+      usageTally.cacheRead * price.in * 0.1 +
+      usageTally.out * price.out) /
+    1e6;
+  console.log(`Model: ${MODEL}   calls: ${calls}   dropped (failed contrast bar): ${dropped}`);
+  console.log(
+    `est_cost=$${estCost.toFixed(3)}  ` +
+      `(in=${usageTally.in} cacheWrite=${usageTally.cacheWrite} cacheRead=${usageTally.cacheRead} out=${usageTally.out})`
+  );
 }
 
 main()

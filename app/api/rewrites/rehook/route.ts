@@ -10,7 +10,7 @@ export const runtime = "nodejs";
 import { NextRequest, NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
-import { anthropic } from "@/lib/anthropic";
+import { anthropic, TONE_MODEL, cachedSystem } from "@/lib/anthropic";
 import { PILLAR_META, coercePillar } from "@/lib/pillars";
 
 const RULES = fs.readFileSync(
@@ -58,13 +58,14 @@ export async function POST(req: NextRequest) {
     const pillar = coercePillar(pillarRaw);
     const firstLine = rewriteText.split("\n")[0];
 
-    const system = `${RULES}
-
----
+    const system = cachedSystem(
+      RULES,
+      `---
 
 # Your job right now
 
-Generate three alternative OPENING LINES (hooks) for an already-good post. Only the first line changes; the body stays exactly as written. Each hook is a genuinely different angle into the same post and is fully on-voice. No hook restates another. Return only the hook line itself — no body, no surrounding quotes, no numbering.`;
+Generate three alternative OPENING LINES (hooks) for an already-good post. Only the first line changes; the body stays exactly as written. Each hook is a genuinely different angle into the same post and is fully on-voice. No hook restates another. Return only the hook line itself — no body, no surrounding quotes, no numbering.`
+    );
 
     const user = `The post's current first line is:
 "${firstLine}"
@@ -83,7 +84,7 @@ FULL POST:
 ${rewriteText}`;
 
     const params = {
-      model: "claude-opus-4-8",
+      model: TONE_MODEL,
       max_tokens: 2000,
       system,
       messages: [{ role: "user", content: user }],

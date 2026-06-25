@@ -3,7 +3,7 @@
 
 import fs from "fs";
 import path from "path";
-import { anthropic } from "./anthropic";
+import { anthropic, TONE_MODEL, cachedSystem } from "./anthropic";
 import { GENERATION_SCHEMA, type Generation } from "./genSchema";
 import { retrieveExamples } from "./retrieve";
 import { PILLAR_META, type Pillar } from "./pillars";
@@ -30,15 +30,19 @@ export async function generateRewrites(
     })
     .join("\n\n");
 
-  const system = `${RULES}
-
----
+  // Two system blocks: the static voice rubric (cached — identical on every call
+  // site, written once per 5-min window then read at ~10% cost) followed by the
+  // per-draft calibration (volatile, uncached, changes every request).
+  const system = cachedSystem(
+    RULES,
+    `---
 
 # Live calibration — real approved examples retrieved for THIS draft
 
 These are real before/after pairs from Divij, chosen because they're closest to the draft you're rewriting. Match this voice. The "WHY DIVIJ CHANGED IT" lines are his actual reasoning — internalize the taste behind them, don't just avoid rule violations. A rewrite that breaks no rules but feels sanded-clean and lifeless is a failure.
 
-${calibration}`;
+${calibration}`
+  );
 
   const userContent = `Rewrite this draft into three publish-ready versions in Divij's voice.
 
@@ -60,7 +64,7 @@ DRAFT:
 ${draft}`;
 
   const params = {
-    model: "claude-opus-4-8",
+    model: TONE_MODEL,
     max_tokens: 8000,
     system,
     messages: [{ role: "user", content: userContent }],

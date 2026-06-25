@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { anthropic } from "./anthropic";
+import { anthropic, TONE_MODEL, cachedSystem } from "./anthropic";
 import { CRITIQUE_SCHEMA, type Critique } from "./schema";
 
 // The rubric IS the system prompt. Loaded once at module init (server-side only).
@@ -11,9 +11,9 @@ const SYSTEM = fs.readFileSync(
 
 export async function critiqueDraft(draft: string): Promise<Critique> {
   const params = {
-    model: "claude-opus-4-8",
-    max_tokens: 16000,
-    system: SYSTEM,
+    model: TONE_MODEL,
+    max_tokens: 8000, // a critique verdict + 3 rewrites is ~1.5K tokens; 16000 sat at the SDK non-stream timeout guard
+    system: cachedSystem(SYSTEM),
     messages: [
       {
         role: "user",
